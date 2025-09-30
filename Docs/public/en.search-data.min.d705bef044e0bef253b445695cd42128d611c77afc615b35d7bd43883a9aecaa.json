@@ -1,0 +1,1 @@
+[{"id":0,"href":"/SwiftPHP/guides/install/macos/","title":"Macos","section":"Guides","content":"Installing on macOS\nmacOS has two helper scripts:\n# Build PHP.xcframework to compile extensions against ./Scripts/build_xcframework.sh # Build PHP CLI to test your extension with ./Scripts/build_macos.sh "}]

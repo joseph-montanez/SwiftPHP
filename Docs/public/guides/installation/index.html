@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/SwiftPHP/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=SwiftPHP/livereload" data-no-instant defer></script>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Installation Guide#
+As of writing, this is designed for PHP 8.4 support.
+Installing on macOS#
+macOS is straight forward but requires brew and xcode installed.
+xcode-select --install
+
+/bin/bash -c &#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&#34;
+
+# Build PHP.xcframework to compile extensions against
+./Scripts/build_xcframework.sh
+
+# Build PHP CLI to test your extension with
+./Scripts/build_macos.shInstallation on Windows 11 x64/ARM64#
+As of this time, the current Windows SDK is broken and you need to follow the guide to install Swift on Windows successfully https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/SwiftPHP/guides/installation/">
+  <meta property="og:site_name" content="PHP Extensions in Swift">
+  <meta property="og:title" content="Installtion Guide">
+  <meta property="og:description" content="Installation Guide# As of writing, this is designed for PHP 8.4 support.
+Installing on macOS# macOS is straight forward but requires brew and xcode installed.
+xcode-select --install /bin/bash -c &#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&#34; # Build PHP.xcframework to compile extensions against ./Scripts/build_xcframework.sh # Build PHP CLI to test your extension with ./Scripts/build_macos.shInstallation on Windows 11 x64/ARM64# As of this time, the current Windows SDK is broken and you need to follow the guide to install Swift on Windows successfully https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="guides">
+<title>Installtion Guide | PHP Extensions in Swift</title>
+<link rel="icon" href="/SwiftPHP/favicon.png" >
+<link rel="manifest" href="/SwiftPHP/manifest.json">
+<link rel="canonical" href="http://localhost:1313/SwiftPHP/guides/installation/">
+<link rel="stylesheet" href="/SwiftPHP/book.min.d124d6c76b11546b04023ef152f0ca77dd5bfd00e1638c75250d60e274cdc189.css" integrity="sha256-0STWx2sRVGsEAj7xUvDKd91b/QDhY4x1JQ1g4nTNwYk=" crossorigin="anonymous">
+
+
+  <script defer src="/SwiftPHP/fuse.min.js"></script>
+  <script defer src="/SwiftPHP/en.search.min.214062361c7983721201e0b742aac848754ad997b5c87f305dc5d3c1af38c829.js" integrity="sha256-IUBiNhx5g3ISAeC3QqrISHVK2Ze1yH8wXcXTwa84yCk=" crossorigin="anonymous"></script>
+
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-guides">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/SwiftPHP/"><span>PHP Extensions in Swift</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/" class="">
+      Guides</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/installation/" class="active">
+      Installtion Guide</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/SwiftPHP/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>Installtion Guide</h3>
+
+  <label for="toc-control">
+    
+    <img src="/SwiftPHP/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#installing-on-macos">Installing on macOS</a></li>
+    <li><a href="#installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h1 id="installation-guide">Installation Guide<a class="anchor" href="#installation-guide">#</a></h1>
+<p>As of writing, this is designed for PHP 8.4 support.</p>
+<h2 id="installing-on-macos">Installing on macOS<a class="anchor" href="#installing-on-macos">#</a></h2>
+<p>macOS is straight forward but requires brew and xcode installed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>xcode-select --install
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>/bin/bash -c <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Build PHP.xcframework to compile extensions against</span>
+</span></span><span style="display:flex;"><span>./Scripts/build_xcframework.sh
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Build PHP CLI to test your extension with</span>
+</span></span><span style="display:flex;"><span>./Scripts/build_macos.sh</span></span></code></pre></div><h2 id="installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64<a class="anchor" href="#installation-on-windows-11-x64arm64">#</a></h2>
+<p>As of this time, the current Windows SDK is broken and you need to follow the guide to install Swift on Windows successfully <a href="https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751">https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751</a></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+  
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/SwiftPHP/guides/" class="flex align-center">
+        <img src="/SwiftPHP/icons/backward.svg" class="book-icon" alt="Previous" title="Guides" />
+        <span>Guides</span>
+      </a>
+    
+    </span>
+    <span>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+        
+        
+
+ 
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#installing-on-macos">Installing on macOS</a></li>
+    <li><a href="#installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

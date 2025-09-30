@@ -1,0 +1,25 @@
+baseURL = "https://joseph-montanez.github.io/SwiftPHP/" # ⚠️ IMPORTANT: Change this later!
+languageCode = "en-us"
+title = "PHP Extensions in Swift"
+theme = "hugo-book"
+
+[params]
+themeVariant = "light"
+editURL = ""
+showLastUpdated = true
+disableSearch = true
+BookSection = '*'
+
+[module]
+[[module.imports]]
+path = 'hugo-book'
+
+[outputs]
+home = [ "HTML", "RSS", "JSON" ]
+
+# hugo.toml
+
+[[menu.main]]
+  name = "Guides"
+  pageRef = "/guides"
+  weight = 20

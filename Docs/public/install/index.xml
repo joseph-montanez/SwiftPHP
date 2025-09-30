@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Installs on PHP Extensions in Swift</title>
+    <link>http://localhost:1313/SwiftPHP/install/</link>
+    <description>Recent content in Installs on PHP Extensions in Swift</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 29 Sep 2025 09:41:12 -0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/SwiftPHP/install/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Macos</title>
+      <link>http://localhost:1313/SwiftPHP/install/macos/</link>
+      <pubDate>Mon, 29 Sep 2025 09:41:12 -0700</pubDate>
+      <guid>http://localhost:1313/SwiftPHP/install/macos/</guid>
+      <description>&lt;p&gt;Installing on macOS&lt;/p&gt;&#xA;&lt;p&gt;macOS has two helper scripts:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;# Build PHP.xcframework to compile extensions against&#xA;./Scripts/build_xcframework.sh&#xA;&#xA;# Build PHP CLI to test your extension with&#xA;./Scripts/build_macos.sh&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>

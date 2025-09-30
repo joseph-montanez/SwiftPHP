@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "tsrm.h": "c",
+        "zend_sort.h": "c",
+        "zend_api.h": "c",
+        "zend_exceptions.h": "c",
+        "typeinfo": "c"
+    }
+}

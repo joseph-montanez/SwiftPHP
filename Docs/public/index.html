@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+	<meta name="generator" content="Hugo 0.150.1">
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.
+I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://joseph-montanez.github.io/SwiftPHP/">
+  <meta property="og:site_name" content="PHP Extensions in Swift">
+  <meta property="og:title" content="Hello Swift">
+  <meta property="og:description" content="SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.
+I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="website">
+<title>Hello Swift | PHP Extensions in Swift</title>
+<link rel="icon" href="/SwiftPHP/favicon.png" >
+<link rel="manifest" href="/SwiftPHP/manifest.json">
+<link rel="canonical" href="https://joseph-montanez.github.io/SwiftPHP/">
+<link rel="stylesheet" href="/SwiftPHP/book.min.d124d6c76b11546b04023ef152f0ca77dd5bfd00e1638c75250d60e274cdc189.css" integrity="sha256-0STWx2sRVGsEAj7xUvDKd91b/QDhY4x1JQ1g4nTNwYk=" crossorigin="anonymous">
+
+
+  <script defer src="/SwiftPHP/fuse.min.js"></script>
+  <script defer src="/SwiftPHP/en.search.min.c31d14909db1e0914a67b8aae3ca28366272ad0a67d9a572620d42c3ea38bbb2.js" integrity="sha256-wx0UkJ2x4JFKZ7iq48ooNmJyrQpn2aVyYg1Cw&#43;o4u7I=" crossorigin="anonymous"></script>
+<link rel="alternate" type="application/rss+xml" href="https://joseph-montanez.github.io/SwiftPHP/index.xml" title="PHP Extensions in Swift" />
+
+  
+</head>
+<body dir="ltr" class="book-kind-home book-type-page">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/SwiftPHP/"><span>PHP Extensions in Swift</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/" class="">
+      Guides</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/SwiftPHP/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>Hello Swift</h3>
+
+  <label for="toc-control">
+    
+    <img src="/SwiftPHP/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#supported-php-versions">Supported PHP Versions</a></li>
+    <li><a href="#supported-operating-systems">Supported Operating Systems</a></li>
+    <li><a href="#hello-world-skeleton">Hello World Skeleton</a>
+      <ul>
+        <li><a href="#php-function">PHP function:</a></li>
+        <li><a href="#native-php-extension-version-in-swift">Native PHP Extension version in Swift</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><p>SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.</p>
+<p>I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.</p>
+<p>Why not &ldquo;X-language&rdquo;? Well, PHP&rsquo;s C-API is mostly C-Macros which is not possible to replicate in any other language other than C++.</p>
+<ul>
+<li><strong>Zig</strong> - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API</li>
+<li><strong>Rust</strong> - Someone already did this work in Rust <a href="https://github.com/davidcole1340/ext-php-rs">https://github.com/davidcole1340/ext-php-rs</a></li>
+</ul>
+<h2 id="supported-php-versions">Supported PHP Versions<a class="anchor" href="#supported-php-versions">#</a></h2>
+<ul>
+<li>PHP 8.2 (Unsupported)</li>
+<li>PHP 8.3 (Unsupported)</li>
+<li>PHP 8.4 Thread-safe (ZTS)</li>
+<li>PHP 8.5 (Pending Testing)</li>
+</ul>
+<h2 id="supported-operating-systems">Supported Operating Systems<a class="anchor" href="#supported-operating-systems">#</a></h2>
+<ul>
+<li>MacOS ARM64</li>
+<li>Windows 11 x64 and ARM64</li>
+<li>Windows 11 ARM64</li>
+<li>Linux x64</li>
+<li>Linux ARM64</li>
+</ul>
+<h2 id="hello-world-skeleton">Hello World Skeleton<a class="anchor" href="#hello-world-skeleton">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Compile extension</span>
+</span></span><span style="display:flex;"><span>swift build -v --product SwiftPHPExtension
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run PHP with custom extension</span>
+</span></span><span style="display:flex;"><span>php -dextension<span style="color:#f92672">=</span>.build/arm64-apple-macosx/debug/libSwiftPHPExtension.dylib <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -r <span style="color:#e6db74">&#39;var_dump(confirm_myext_compiled(), myext_hello());&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Output:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># string(68) &#34;Congratulations! You have successfully compiled the Swift extension.&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># string(0) &#34;&#34;</span></span></span></code></pre></div><h3 id="php-function">PHP function:<a class="anchor" href="#php-function">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">myext_hello</span>(<span style="color:#f92672">?</span><span style="color:#a6e22e">string</span> $str)<span style="color:#f92672">:</span> <span style="color:#a6e22e">string</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ($str <span style="color:#f92672">===</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Hello &#34;</span> <span style="color:#f92672">.</span> $str;
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><h3 id="native-php-extension-version-in-swift">Native PHP Extension version in Swift<a class="anchor" href="#native-php-extension-version-in-swift">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">PHPCore</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">Foundation</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// PHP function argument register for type checking</span>
+</span></span><span style="display:flex;"><span>@MainActor
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">let</span> arginfo_myext_hello: [zend_internal_arg_info] =
+</span></span><span style="display:flex;"><span>    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+</span></span><span style="display:flex;"><span>        name: <span style="color:#e6db74">&#34;myext_hello&#34;</span>, 
+</span></span><span style="display:flex;"><span>        return_reference: <span style="color:#66d9ef">false</span>, 
+</span></span><span style="display:flex;"><span>        required_num_args: <span style="color:#ae81ff">0</span>, <span style="color:#75715e">// All parameters are optional</span>
+</span></span><span style="display:flex;"><span>        type: UInt32(IS_STRING), 
+</span></span><span style="display:flex;"><span>        allow_null: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> [ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(
+</span></span><span style="display:flex;"><span>        pass_by_ref: <span style="color:#66d9ef">false</span>, 
+</span></span><span style="display:flex;"><span>        name: <span style="color:#e6db74">&#34;str&#34;</span>, 
+</span></span><span style="display:flex;"><span>        type_hint: UInt32(IS_STRING), 
+</span></span><span style="display:flex;"><span>        allow_null: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>        default_value: <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\&#34;\&#34;</span><span style="color:#e6db74">&#34;</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Your Swift function to register</span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zif_myext_hello&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zif_myext_hello</span>(
+</span></span><span style="display:flex;"><span>    execute_data: UnsafeMutablePointer&lt;zend_execute_data&gt;?, 
+</span></span><span style="display:flex;"><span>    return_value: UnsafeMutablePointer&lt;zval&gt;?) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Ensure return value is initialized (redundent but needed)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">guard</span> <span style="color:#66d9ef">let</span> return_value: UnsafeMutablePointer&lt;zval&gt; = return_value <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Safely do parameter capture</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> var_str: UnsafeMutablePointer&lt;CChar&gt;? = <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> var_len: Int = <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Start parameter parsing</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">guard</span> <span style="color:#66d9ef">var</span> state: ParseState = ZEND_PARSE_PARAMETERS_START(
+</span></span><span style="display:flex;"><span>            min: <span style="color:#ae81ff">0</span>, max: <span style="color:#ae81ff">1</span>, execute_data: execute_data
+</span></span><span style="display:flex;"><span>        ) <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Any parameter parsed after this is optional</span>
+</span></span><span style="display:flex;"><span>        Z_PARAM_OPTIONAL(state: &amp;state)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// If this was not optional Z_PARAM_STRING </span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// would be the correct call instead.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> Z_PARAM_STRING_OR_NULL(
+</span></span><span style="display:flex;"><span>            state: &amp;state, dest: &amp;var_str, destLen: &amp;var_len
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> ZEND_PARSE_PARAMETERS_END(state: state)
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> swiftString: String
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> cString = var_str {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// A string (even an empty one) was passed, so we use it.</span>
+</span></span><span style="display:flex;"><span>        swiftString = String(cString: cString)
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// A `null` was passed or the argument was omitted. Return an empty string</span>
+</span></span><span style="display:flex;"><span>        RETURN_STR(ZSTR_EMPTY_ALLOC(), return_value)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Format Swift String</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> message: String = <span style="color:#e6db74">&#34;Hello </span><span style="color:#e6db74">\(</span>swiftString<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Convert back to PHP String</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> retval: UnsafeMutablePointer&lt;zend_string&gt;? = message.withCString { 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> zend_string_init(messagePtr, message.utf8.count, <span style="color:#66d9ef">false</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Return the PHP String</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> resultString: UnsafeMutablePointer&lt;zend_string&gt; = retval {
+</span></span><span style="display:flex;"><span>        RETURN_STR(resultString, return_value)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Global pointers to hold data that will persist</span>
+</span></span><span style="display:flex;"><span>@MainActor <span style="color:#66d9ef">var</span> myext_functions_ptr: UnsafeMutablePointer&lt;zend_function_entry&gt;? = <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>@MainActor <span style="color:#66d9ef">var</span> myext_ini_entries_ptr: UnsafeMutablePointer&lt;zend_ini_entry&gt;? = <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>@MainActor <span style="color:#66d9ef">var</span> myext_deps_ptr: UnsafeMutablePointer&lt;zend_module_dep&gt;? = <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>@MainActor <span style="color:#66d9ef">var</span> myextModule_ptr: UnsafeMutablePointer&lt;zend_module_entry&gt;? = <span style="color:#66d9ef">nil</span> 
+</span></span><span style="display:flex;"><span>@MainActor <span style="color:#66d9ef">var</span> myext_globals_id: ts_rsrc_id = <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">myextGlobals</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> someGlobalVariable: Int = <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_startup_myext&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_startup_myext</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_shutdown_myext&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_shutdown_myext</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_activate_myext&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_activate_myext</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_deactivate_myext&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_deactivate_myext</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_info_myext&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_info_myext</span>(zend_module: UnsafeMutableRawPointer?) {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Myext Module Version: 2.0.0&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_globals_ctor_myext&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_globals_ctor_myext</span>(pointer: UnsafeMutableRawPointer?) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> globals = pointer!.bindMemory(to: myextGlobals.<span style="color:#66d9ef">self</span>, capacity: <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    globals.pointee.someGlobalVariable = <span style="color:#ae81ff">42</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_globals_dtor_myext&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_globals_dtor_myext</span>(pointer: UnsafeMutableRawPointer?) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Optional cleanup code for globals</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;get_module&#34;</span>)
+</span></span><span style="display:flex;"><span>@MainActor
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">get_module</span>() -&gt; UnsafeMutablePointer&lt;zend_module_entry&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Allocate memory for myext_functions</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> builder = FunctionListBuilder()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Add myext_hello</span>
+</span></span><span style="display:flex;"><span>    builder.add(
+</span></span><span style="display:flex;"><span>        name: <span style="color:#e6db74">&#34;myext_hello&#34;</span>, 
+</span></span><span style="display:flex;"><span>        handler: zif_myext_hello, 
+</span></span><span style="display:flex;"><span>        arg_info: arginfo_myext_hello
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Convert to `UnsafeMutablePointer&lt;zend_function_entry&gt;`</span>
+</span></span><span style="display:flex;"><span>    myext_functions_ptr = builder.build()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create PHP Build String</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> version = strdup(<span style="color:#e6db74">&#34;1.0.0&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> module_name = strdup(<span style="color:#e6db74">&#34;myext&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> buildIdString = <span style="color:#e6db74">&#34;API</span><span style="color:#e6db74">\(</span>PHP_API_VERSION<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ZTS <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>        buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,TS&#34;</span> <span style="color:#75715e">// Thread Safe</span>
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,NTS&#34;</span> <span style="color:#75715e">// Non-Thread Safe</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> PHP_DEBUG <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>        buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,debug&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> build_id = strdup(buildIdString)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Setup Custom INI settings</span>
+</span></span><span style="display:flex;"><span>    myext_ini_entries_ptr = UnsafeMutablePointer&lt;zend_ini_entry&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    myext_ini_entries_ptr?.initialize(to: zend_ini_entry())
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Dependancies</span>
+</span></span><span style="display:flex;"><span>    myext_deps_ptr = UnsafeMutablePointer&lt;zend_module_dep&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    myext_deps_ptr?.initialize(to: zend_module_dep())
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    myextModule_ptr = create_module_entry(
+</span></span><span style="display:flex;"><span>        module_name,
+</span></span><span style="display:flex;"><span>        version,
+</span></span><span style="display:flex;"><span>        myext_functions_ptr,
+</span></span><span style="display:flex;"><span>        zm_startup_myext,
+</span></span><span style="display:flex;"><span>        zm_shutdown_myext,
+</span></span><span style="display:flex;"><span>        zm_activate_myext,
+</span></span><span style="display:flex;"><span>        zm_deactivate_myext,
+</span></span><span style="display:flex;"><span>        zm_info_myext,
+</span></span><span style="display:flex;"><span>        MemoryLayout&lt;myextGlobals&gt;.size,
+</span></span><span style="display:flex;"><span>        &amp;myext_globals_id,
+</span></span><span style="display:flex;"><span>        zm_globals_ctor_myext,
+</span></span><span style="display:flex;"><span>        zm_globals_dtor_myext,
+</span></span><span style="display:flex;"><span>        build_id
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> myextModule_ptr!
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+  
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+        
+        
+
+ 
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#supported-php-versions">Supported PHP Versions</a></li>
+    <li><a href="#supported-operating-systems">Supported Operating Systems</a></li>
+    <li><a href="#hello-world-skeleton">Hello World Skeleton</a>
+      <ul>
+        <li><a href="#php-function">PHP function:</a></li>
+        <li><a href="#native-php-extension-version-in-swift">Native PHP Extension version in Swift</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

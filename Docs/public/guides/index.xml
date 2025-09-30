@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Guides on PHP Extensions in Swift</title>
+    <link>https://joseph-montanez.github.io/SwiftPHP/guides/</link>
+    <description>Recent content in Guides on PHP Extensions in Swift</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="https://joseph-montanez.github.io/SwiftPHP/guides/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
