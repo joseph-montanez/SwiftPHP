@@ -28,7 +28,9 @@ zend_module_entry* create_module_entry(
     int (*request_shutdown_func)(SHUTDOWN_FUNC_ARGS),
     void (*info_func)(ZEND_MODULE_INFO_FUNC_ARGS),
     size_t globals_size,
+    #ifdef ZTS
     ts_rsrc_id* globals_id_ptr,
+    #endif
     void (*globals_ctor)(void* global_ctor_arg),
     void (*globals_dtor)(void* global_dtor_arg),
     const char* build_id
@@ -36,8 +38,8 @@ zend_module_entry* create_module_entry(
 
 // sapi_module_struct* get_php_embed_module(void);
 // void set_php_embed_ini_defaults(void (*ini_defaults)(HashTable *));
-void call_php_with_try(void (*swift_callback)());
-zend_result safe_zend_call_function(zend_fcall_info *fci, zend_fcall_info_cache *fci_cache);
+// void call_php_with_try(void (*swift_callback)());
+// zend_result safe_zend_call_function(zend_fcall_info *fci, zend_fcall_info_cache *fci_cache);
 // bool safe_php_execute_script(zend_file_handle *primary_file);
 
 #ifndef ZTS

@@ -1,11 +1,20 @@
 import Foundation
 
+#if ZEND_DEBUG
 public let STANDARD_MODULE_HEADER_EX = (
     size: MemoryLayout<zend_module_entry>.size,
     zendApiNo: ZEND_MODULE_API_NO,
-    zendDebug: ZEND_DEBUG,
+    zendDebug: 1, // Or ZEND_DEBUG if it has a specific value
     usingZTS: USING_ZTS
 )
+#else
+public let STANDARD_MODULE_HEADER_EX = (
+    size: MemoryLayout<zend_module_entry>.size,
+    zendApiNo: ZEND_MODULE_API_NO,
+    zendDebug: 0,
+    usingZTS: USING_ZTS
+)
+#endif
 
 public let STANDARD_MODULE_PROPERTIES_EX: (
     globalsSize: Int,

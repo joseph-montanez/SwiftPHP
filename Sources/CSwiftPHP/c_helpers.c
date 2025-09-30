@@ -1,3 +1,25 @@
+#ifndef ZEND_WIN32
+# define ZEND_WIN32 1
+#endif
+#ifndef PHP_WIN32
+# define PHP_WIN32 1
+#endif
+#ifndef _WIN32
+# define _WIN32 1
+#endif
+#ifndef WIN32
+# define WIN32 1
+#endif
+#ifndef _WINDOWS
+# define _WINDOWS 1
+#endif
+#ifndef ZTS
+# define ZTS 1
+#endif
+#ifndef ZEND_DEBUG
+# define ZEND_DEBUG 0
+#endif
+
 #include "main/php.h"
 #include "Zend/zend.h"
 #include "Zend/zend_exceptions.h"
@@ -62,32 +84,32 @@ zend_result swift_zend_parse_parameters_12(uint32_t num_args, const char *type_s
 //     php_embed_module.ini_defaults = ini_defaults;
 // }
 
-void call_php_with_try(void (*swift_callback)()) {
-    zend_try {
-        // Inside the try, call the Swift callback function
-        swift_callback();
-    } zend_catch {
-        php_printf("Caught an exception or error\n");
-    } zend_end_try();
-}
+// void call_php_with_try(void (*swift_callback)()) {
+//     zend_try {
+//         // Inside the try, call the Swift callback function
+//         swift_callback();
+//     } zend_catch {
+//         php_printf("Caught an exception or error\n");
+//     } zend_end_try();
+// }
 
 
-zend_result safe_zend_call_function(zend_fcall_info *fci, zend_fcall_info_cache *fci_cache) {
-    zend_result result;
+// zend_result safe_zend_call_function(zend_fcall_info *fci, zend_fcall_info_cache *fci_cache) {
+//     zend_result result;
     
-    // Try calling the PHP function
-    zend_try {
-        result = zend_call_function(fci, fci_cache);
-    } zend_catch {
-        // Handle the bailout here, set an error result
-        result = FAILURE;
+//     // Try calling the PHP function
+//     zend_try {
+//         result = zend_call_function(fci, fci_cache);
+//     } zend_catch {
+//         // Handle the bailout here, set an error result
+//         result = FAILURE;
 
-        // Handle non-exception error
-        php_printf("Error: Script execution failed without throwing an exception\n");
-    } zend_end_try();
+//         // Handle non-exception error
+//         php_printf("Error: Script execution failed without throwing an exception\n");
+//     } zend_end_try();
 
-    return result;
-}
+//     return result;
+// }
 
 // bool safe_php_execute_script(zend_file_handle *primary_file) {
 //     bool retval = false;
@@ -131,7 +153,9 @@ zend_module_entry* create_module_entry(
     int (*request_shutdown_func)(SHUTDOWN_FUNC_ARGS),
     void (*info_func)(ZEND_MODULE_INFO_FUNC_ARGS),
     size_t globals_size,
+    #ifdef ZTS
     ts_rsrc_id* globals_id_ptr,
+    #endif
     void (*globals_ctor)(void* global_ctor_arg),
     void (*globals_dtor)(void* global_dtor_arg),
     const char* build_id
@@ -143,7 +167,11 @@ zend_module_entry* create_module_entry(
 
     entry->size = sizeof(zend_module_entry);
     entry->zend_api = ZEND_MODULE_API_NO;
-    entry->zend_debug = ZEND_DEBUG;
+    #ifdef ZEND_DEBUG
+        entry->zend_debug = ZEND_DEBUG;
+    #else
+        entry->zend_debug = 0;
+    #endif
     entry->zts = USING_ZTS;
     entry->ini_entry = NULL;
     entry->deps = NULL;

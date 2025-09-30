@@ -41,7 +41,7 @@ xcode-select --install /bin/bash -c &#34;$(curl -fsSL https://raw.githubusercont
 
 
   <script defer src="/SwiftPHP/fuse.min.js"></script>
-  <script defer src="/SwiftPHP/en.search.min.214062361c7983721201e0b742aac848754ad997b5c87f305dc5d3c1af38c829.js" integrity="sha256-IUBiNhx5g3ISAeC3QqrISHVK2Ze1yH8wXcXTwa84yCk=" crossorigin="anonymous"></script>
+  <script defer src="/SwiftPHP/en.search.min.4c7f8c3deba46a893d176a6ec0c4fc46cd905a03474abd870873c350e0b7195a.js" integrity="sha256-TH&#43;MPeukaok9F2puwMT8Rs2QWgNHSr2HCHPDUOC3GVo=" crossorigin="anonymous"></script>
 
   
 </head>
@@ -170,7 +170,11 @@ xcode-select --install /bin/bash -c &#34;$(curl -fsSL https://raw.githubusercont
 <nav id="TableOfContents">
   <ul>
     <li><a href="#installing-on-macos">Installing on macOS</a></li>
-    <li><a href="#installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64</a></li>
+    <li><a href="#installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64</a>
+      <ul>
+        <li><a href="#windows-11-arm64">Windows 11 ARM64</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 
@@ -197,6 +201,23 @@ xcode-select --install /bin/bash -c &#34;$(curl -fsSL https://raw.githubusercont
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># Build PHP CLI to test your extension with</span>
 </span></span><span style="display:flex;"><span>./Scripts/build_macos.sh</span></span></code></pre></div><h2 id="installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64<a class="anchor" href="#installation-on-windows-11-x64arm64">#</a></h2>
 <p>As of this time, the current Windows SDK is broken and you need to follow the guide to install Swift on Windows successfully <a href="https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751">https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751</a></p>
+<h3 id="windows-11-arm64">Windows 11 ARM64<a class="anchor" href="#windows-11-arm64">#</a></h3>
+<p>PHP has no official support for Windows 11 on ARM, however progress is being made and you can use the guide below.</p>
+<ol>
+<li>Download the experimental builds for PHP 8.4: <a href="https://github.com/hyh19962008/php-windows-arm64/releases/tag/8.4.10">https://github.com/hyh19962008/php-windows-arm64/releases/tag/8.4.10</a>. Source code and Binary</li>
+</ol>
+<ul>
+<li>php-8.4.10-nts-Win32-vs17-arm64-experimental.7z</li>
+<li>Source code (zip)</li>
+</ul>
+<ol start="2">
+<li>
+<p>Copy <code>php-src-php-8.4.10\win32\build\config.w32.h.in</code> to <code>php-src-php-8.4.10\php\config.w32.h</code></p>
+</li>
+<li>
+<p>Edit <code>Scripts\win_ext.ps1</code> and change <code>$env:PHP_SRC_ROOT=&quot;D:/dev/php-src-php-8.4.10&quot;</code> to where the PHP source code was unzipped to.</p>
+</li>
+</ol>
 </article>
  
       
@@ -271,7 +292,11 @@ xcode-select --install /bin/bash -c &#34;$(curl -fsSL https://raw.githubusercont
 <nav id="TableOfContents">
   <ul>
     <li><a href="#installing-on-macos">Installing on macOS</a></li>
-    <li><a href="#installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64</a></li>
+    <li><a href="#installation-on-windows-11-x64arm64">Installation on Windows 11 x64/ARM64</a>
+      <ul>
+        <li><a href="#windows-11-arm64">Windows 11 ARM64</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 

@@ -1,7 +1,7 @@
 import Foundation
 
 #if os(Linux) || os(Windows)
-    @preconcurrency import CPHP
+    @preconcurrency import CSwiftPHP
 #else
     @preconcurrency import PHP
 #endif

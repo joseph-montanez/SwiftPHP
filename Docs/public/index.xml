@@ -2,10 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hello Swift on PHP Extensions in Swift</title>
-    <link>https://joseph-montanez.github.io/SwiftPHP/</link>
+    <link>http://localhost:1313/SwiftPHP/</link>
     <description>Recent content in Hello Swift on PHP Extensions in Swift</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <atom:link href="https://joseph-montanez.github.io/SwiftPHP/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/SwiftPHP/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Installtion Guide</title>
+      <link>http://localhost:1313/SwiftPHP/guides/installation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/SwiftPHP/guides/installation/</guid>
+      <description>&lt;h1 id=&#34;installation-guide&#34;&gt;Installation Guide&lt;a class=&#34;anchor&#34; href=&#34;#installation-guide&#34;&gt;#&lt;/a&gt;&lt;/h1&gt;&#xA;&lt;p&gt;As of writing, this is designed for PHP 8.4 support.&lt;/p&gt;&#xA;&lt;h2 id=&#34;installing-on-macos&#34;&gt;Installing on macOS&lt;a class=&#34;anchor&#34; href=&#34;#installing-on-macos&#34;&gt;#&lt;/a&gt;&lt;/h2&gt;&#xA;&lt;p&gt;macOS is straight forward but requires brew and xcode installed.&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;xcode-select --install&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;/bin/bash -c &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Build PHP.xcframework to compile extensions against&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./Scripts/build_xcframework.sh&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Build PHP CLI to test your extension with&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./Scripts/build_macos.sh&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;installation-on-windows-11-x64arm64&#34;&gt;Installation on Windows 11 x64/ARM64&lt;a class=&#34;anchor&#34; href=&#34;#installation-on-windows-11-x64arm64&#34;&gt;#&lt;/a&gt;&lt;/h2&gt;&#xA;&lt;p&gt;As of this time, the current Windows SDK is broken and you need to follow the guide to install Swift on Windows successfully &lt;a href=&#34;https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751&#34;&gt;https://forums.swift.org/t/an-unofficial-guide-to-building-the-swift-toolchain-on-windows-x64-and-arm64/81751&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>

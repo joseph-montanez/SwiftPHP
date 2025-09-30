@@ -186,59 +186,70 @@ func zm_globals_dtor_myext(pointer: UnsafeMutableRawPointer?) {
 @_cdecl("get_module")
 @MainActor
 func get_module() -> UnsafeMutablePointer<zend_module_entry> {
-    // Allocate memory for myext_functions
+    // Allocate memory for raylib_functions
     var builder = FunctionListBuilder()
-
-    // Add myext_hello
-    builder.add(
-        name: "myext_hello", 
-        handler: zif_myext_hello, 
-        arg_info: arginfo_myext_hello
-    )
-
-    // Convert to `UnsafeMutablePointer<zend_function_entry>`
-    myext_functions_ptr = builder.build()
+    functions_add_entries(builder: &builder)
+    raylib_functions_ptr = builder.build()
     
-    // Create PHP Build String
-    let version = strdup("1.0.0")
-    let module_name = strdup("myext")
+    let version = strdup("2.0.0")
+    let module_name = strdup("raylib")
     var buildIdString = "API\(PHP_API_VERSION)"
-    if ZTS != 0 {
-        buildIdString += ",TS" // Thread Safe
-    } else {
-        buildIdString += ",NTS" // Non-Thread Safe
-    }
-    if PHP_DEBUG != 0 {
-        buildIdString += ",debug"
-    }
+
+#if ZTS
+    buildIdString += ",TS" // Thread Safe
+#else
+    buildIdString += ",NTS" // Non-Thread Safe
+#endif
+
+#if PHP_DEBUG
+    buildIdString += ",debug"
+#endif
+
     let build_id = strdup(buildIdString)
     
-    // Setup Custom INI settings
-    myext_ini_entries_ptr = UnsafeMutablePointer<zend_ini_entry>.allocate(capacity: 1)
-    myext_ini_entries_ptr?.initialize(to: zend_ini_entry())
+    raylib_ini_entries_ptr = UnsafeMutablePointer<zend_ini_entry>.allocate(capacity: 1)
+    raylib_ini_entries_ptr?.initialize(to: zend_ini_entry())
     
-    // Dependancies
-    myext_deps_ptr = UnsafeMutablePointer<zend_module_dep>.allocate(capacity: 1)
-    myext_deps_ptr?.initialize(to: zend_module_dep())
-    
-    myextModule_ptr = create_module_entry(
+    raylib_deps_ptr = UnsafeMutablePointer<zend_module_dep>.allocate(capacity: 1)
+    raylib_deps_ptr?.initialize(to: zend_module_dep())
+
+#if ZTS
+    raylibModule_ptr = create_module_entry(
         module_name,
         version,
-        myext_functions_ptr,
-        zm_startup_myext,
-        zm_shutdown_myext,
-        zm_activate_myext,
-        zm_deactivate_myext,
-        zm_info_myext,
-        MemoryLayout<myextGlobals>.size,
-        &myext_globals_id,
-        zm_globals_ctor_myext,
-        zm_globals_dtor_myext,
+        raylib_functions_ptr,
+        zm_startup_raylib,
+        zm_shutdown_raylib,
+        zm_activate_raylib,
+        zm_deactivate_raylib,
+        zm_info_raylib,
+        MemoryLayout<raylibGlobals>.size,
+        &raylib_globals_id,
+        zm_globals_ctor_raylib,
+        zm_globals_dtor_raylib,
         build_id
     )
+#else
+    raylibModule_ptr = create_module_entry(
+        module_name,
+        version,
+        raylib_functions_ptr,
+        zm_startup_raylib,
+        zm_shutdown_raylib,
+        zm_activate_raylib,
+        zm_deactivate_raylib,
+        zm_info_raylib,
+        MemoryLayout<raylibGlobals>.size,
+        zm_globals_ctor_raylib,
+        zm_globals_dtor_raylib,
+        build_id
+    )
+#endif
     
-    return myextModule_ptr!
+    return raylibModule_ptr!
 }
+
+
 
 
 

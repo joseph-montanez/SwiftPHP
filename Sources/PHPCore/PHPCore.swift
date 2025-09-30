@@ -1,5 +1,5 @@
 #if os(Linux) || os(Windows)
-    @preconcurrency @_exported import CPHP
+    @preconcurrency @_exported import CSwiftPHP
 #else
     @preconcurrency @_exported import PHP
 #endif
@@ -67,6 +67,8 @@ public struct PhpFunctionContext {
     }
 }
 
+#if ZTS
+// ZTS (Thread Safe) version of the function
 @_silgen_name("create_module_entry")
 public func create_module_entry(
     _ name: UnsafePointer<CChar>?,
@@ -78,11 +80,30 @@ public func create_module_entry(
     _ request_shutdown_func: @convention(c) (Int32, Int32) -> Int32,
     _ info_func: @convention(c) (UnsafeMutableRawPointer?) -> Void,
     _ globals_size: Int,
-    _ globals_id_ptr: UnsafeMutablePointer<ts_rsrc_id>?,
+    _ globals_id_ptr: UnsafeMutablePointer<ts_rsrc_id>?, // Included for ZTS
     _ globals_ctor: @convention(c) (UnsafeMutableRawPointer?) -> Void,
     _ globals_dtor: @convention(c) (UnsafeMutableRawPointer?) -> Void,
     _ build_id: UnsafePointer<CChar>?
 ) -> UnsafeMutablePointer<zend_module_entry>
+#else
+// NTS (Non-Thread Safe) version of the function
+@_silgen_name("create_module_entry")
+public func create_module_entry(
+    _ name: UnsafePointer<CChar>?,
+    _ version: UnsafePointer<CChar>?,
+    _ functions: UnsafePointer<zend_function_entry>?,
+    _ module_startup_func: @convention(c) (Int32, Int32) -> Int32,
+    _ module_shutdown_func: @convention(c) (Int32, Int32) -> Int32,
+    _ request_startup_func: @convention(c) (Int32, Int32) -> Int32,
+    _ request_shutdown_func: @convention(c) (Int32, Int32) -> Int32,
+    _ info_func: @convention(c) (UnsafeMutableRawPointer?) -> Void,
+    _ globals_size: Int,
+    // globals_id_ptr is omitted for NTS
+    _ globals_ctor: @convention(c) (UnsafeMutableRawPointer?) -> Void,
+    _ globals_dtor: @convention(c) (UnsafeMutableRawPointer?) -> Void,
+    _ build_id: UnsafePointer<CChar>?
+) -> UnsafeMutablePointer<zend_module_entry>
+#endif
 
 public struct FunctionListBuilder {
     private var functions: [zend_function_entry] = []

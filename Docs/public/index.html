@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
 <head>
-	<meta name="generator" content="Hugo 0.150.1">
+	<meta name="generator" content="Hugo 0.150.1"><script src="/SwiftPHP/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=SwiftPHP/livereload" data-no-instant defer></script>
   <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -13,7 +13,7 @@ https://github.com/alex-shpak/hugo-book
 I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
-<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://joseph-montanez.github.io/SwiftPHP/">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/SwiftPHP/">
   <meta property="og:site_name" content="PHP Extensions in Swift">
   <meta property="og:title" content="Hello Swift">
   <meta property="og:description" content="SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.
@@ -23,13 +23,13 @@ I have chosen to make the API close to the C API for the first release so anyone
 <title>Hello Swift | PHP Extensions in Swift</title>
 <link rel="icon" href="/SwiftPHP/favicon.png" >
 <link rel="manifest" href="/SwiftPHP/manifest.json">
-<link rel="canonical" href="https://joseph-montanez.github.io/SwiftPHP/">
+<link rel="canonical" href="http://localhost:1313/SwiftPHP/">
 <link rel="stylesheet" href="/SwiftPHP/book.min.d124d6c76b11546b04023ef152f0ca77dd5bfd00e1638c75250d60e274cdc189.css" integrity="sha256-0STWx2sRVGsEAj7xUvDKd91b/QDhY4x1JQ1g4nTNwYk=" crossorigin="anonymous">
 
 
   <script defer src="/SwiftPHP/fuse.min.js"></script>
-  <script defer src="/SwiftPHP/en.search.min.c31d14909db1e0914a67b8aae3ca28366272ad0a67d9a572620d42c3ea38bbb2.js" integrity="sha256-wx0UkJ2x4JFKZ7iq48ooNmJyrQpn2aVyYg1Cw&#43;o4u7I=" crossorigin="anonymous"></script>
-<link rel="alternate" type="application/rss+xml" href="https://joseph-montanez.github.io/SwiftPHP/index.xml" title="PHP Extensions in Swift" />
+  <script defer src="/SwiftPHP/en.search.min.4c7f8c3deba46a893d176a6ec0c4fc46cd905a03474abd870873c350e0b7195a.js" integrity="sha256-TH&#43;MPeukaok9F2puwMT8Rs2QWgNHSr2HCHPDUOC3GVo=" crossorigin="anonymous"></script>
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/SwiftPHP/index.xml" title="PHP Extensions in Swift" />
 
   
 </head>
@@ -86,6 +86,20 @@ I have chosen to make the API close to the C API for the first release so anyone
 
           
   <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/installation/" class="">
+      Installtion Guide</a>
+  
+
+        </li>
+      
     
   </ul>
 
@@ -334,58 +348,67 @@ I have chosen to make the API close to the C API for the first release so anyone
 </span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;get_module&#34;</span>)
 </span></span><span style="display:flex;"><span>@MainActor
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">get_module</span>() -&gt; UnsafeMutablePointer&lt;zend_module_entry&gt; {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Allocate memory for myext_functions</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Allocate memory for raylib_functions</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> builder = FunctionListBuilder()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Add myext_hello</span>
-</span></span><span style="display:flex;"><span>    builder.add(
-</span></span><span style="display:flex;"><span>        name: <span style="color:#e6db74">&#34;myext_hello&#34;</span>, 
-</span></span><span style="display:flex;"><span>        handler: zif_myext_hello, 
-</span></span><span style="display:flex;"><span>        arg_info: arginfo_myext_hello
-</span></span><span style="display:flex;"><span>    )
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Convert to `UnsafeMutablePointer&lt;zend_function_entry&gt;`</span>
-</span></span><span style="display:flex;"><span>    myext_functions_ptr = builder.build()
+</span></span><span style="display:flex;"><span>    functions_add_entries(builder: &amp;builder)
+</span></span><span style="display:flex;"><span>    raylib_functions_ptr = builder.build()
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create PHP Build String</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> version = strdup(<span style="color:#e6db74">&#34;1.0.0&#34;</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> module_name = strdup(<span style="color:#e6db74">&#34;myext&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> version = strdup(<span style="color:#e6db74">&#34;2.0.0&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> module_name = strdup(<span style="color:#e6db74">&#34;raylib&#34;</span>)
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> buildIdString = <span style="color:#e6db74">&#34;API</span><span style="color:#e6db74">\(</span>PHP_API_VERSION<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ZTS <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
-</span></span><span style="display:flex;"><span>        buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,TS&#34;</span> <span style="color:#75715e">// Thread Safe</span>
-</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>        buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,NTS&#34;</span> <span style="color:#75715e">// Non-Thread Safe</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> PHP_DEBUG <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
-</span></span><span style="display:flex;"><span>        buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,debug&#34;</span>
-</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">ZTS</span>
+</span></span><span style="display:flex;"><span>    buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,TS&#34;</span> <span style="color:#75715e">// Thread Safe</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#else</span>
+</span></span><span style="display:flex;"><span>    buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,NTS&#34;</span> <span style="color:#75715e">// Non-Thread Safe</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">PHP_DEBUG</span>
+</span></span><span style="display:flex;"><span>    buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,debug&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif</span>
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> build_id = strdup(buildIdString)
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Setup Custom INI settings</span>
-</span></span><span style="display:flex;"><span>    myext_ini_entries_ptr = UnsafeMutablePointer&lt;zend_ini_entry&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span>    myext_ini_entries_ptr?.initialize(to: zend_ini_entry())
+</span></span><span style="display:flex;"><span>    raylib_ini_entries_ptr = UnsafeMutablePointer&lt;zend_ini_entry&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    raylib_ini_entries_ptr?.initialize(to: zend_ini_entry())
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Dependancies</span>
-</span></span><span style="display:flex;"><span>    myext_deps_ptr = UnsafeMutablePointer&lt;zend_module_dep&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span>    myext_deps_ptr?.initialize(to: zend_module_dep())
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    myextModule_ptr = create_module_entry(
+</span></span><span style="display:flex;"><span>    raylib_deps_ptr = UnsafeMutablePointer&lt;zend_module_dep&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    raylib_deps_ptr?.initialize(to: zend_module_dep())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">ZTS</span>
+</span></span><span style="display:flex;"><span>    raylibModule_ptr = create_module_entry(
 </span></span><span style="display:flex;"><span>        module_name,
 </span></span><span style="display:flex;"><span>        version,
-</span></span><span style="display:flex;"><span>        myext_functions_ptr,
-</span></span><span style="display:flex;"><span>        zm_startup_myext,
-</span></span><span style="display:flex;"><span>        zm_shutdown_myext,
-</span></span><span style="display:flex;"><span>        zm_activate_myext,
-</span></span><span style="display:flex;"><span>        zm_deactivate_myext,
-</span></span><span style="display:flex;"><span>        zm_info_myext,
-</span></span><span style="display:flex;"><span>        MemoryLayout&lt;myextGlobals&gt;.size,
-</span></span><span style="display:flex;"><span>        &amp;myext_globals_id,
-</span></span><span style="display:flex;"><span>        zm_globals_ctor_myext,
-</span></span><span style="display:flex;"><span>        zm_globals_dtor_myext,
+</span></span><span style="display:flex;"><span>        raylib_functions_ptr,
+</span></span><span style="display:flex;"><span>        zm_startup_raylib,
+</span></span><span style="display:flex;"><span>        zm_shutdown_raylib,
+</span></span><span style="display:flex;"><span>        zm_activate_raylib,
+</span></span><span style="display:flex;"><span>        zm_deactivate_raylib,
+</span></span><span style="display:flex;"><span>        zm_info_raylib,
+</span></span><span style="display:flex;"><span>        MemoryLayout&lt;raylibGlobals&gt;.size,
+</span></span><span style="display:flex;"><span>        &amp;raylib_globals_id,
+</span></span><span style="display:flex;"><span>        zm_globals_ctor_raylib,
+</span></span><span style="display:flex;"><span>        zm_globals_dtor_raylib,
 </span></span><span style="display:flex;"><span>        build_id
 </span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#else</span>
+</span></span><span style="display:flex;"><span>    raylibModule_ptr = create_module_entry(
+</span></span><span style="display:flex;"><span>        module_name,
+</span></span><span style="display:flex;"><span>        version,
+</span></span><span style="display:flex;"><span>        raylib_functions_ptr,
+</span></span><span style="display:flex;"><span>        zm_startup_raylib,
+</span></span><span style="display:flex;"><span>        zm_shutdown_raylib,
+</span></span><span style="display:flex;"><span>        zm_activate_raylib,
+</span></span><span style="display:flex;"><span>        zm_deactivate_raylib,
+</span></span><span style="display:flex;"><span>        zm_info_raylib,
+</span></span><span style="display:flex;"><span>        MemoryLayout&lt;raylibGlobals&gt;.size,
+</span></span><span style="display:flex;"><span>        zm_globals_ctor_raylib,
+</span></span><span style="display:flex;"><span>        zm_globals_dtor_raylib,
+</span></span><span style="display:flex;"><span>        build_id
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif</span>
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> myextModule_ptr!
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> raylibModule_ptr!
 </span></span><span style="display:flex;"><span>}</span></span></code></pre></div></article>
  
       

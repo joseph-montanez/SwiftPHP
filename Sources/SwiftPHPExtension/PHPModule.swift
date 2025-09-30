@@ -6,7 +6,9 @@ import Foundation
 @MainActor var raylib_ini_entries_ptr: UnsafeMutablePointer<zend_ini_entry>? = nil
 @MainActor var raylib_deps_ptr: UnsafeMutablePointer<zend_module_dep>? = nil
 @MainActor var raylibModule_ptr: UnsafeMutablePointer<zend_module_entry>? = nil 
+#if ZTS
 @MainActor var raylib_globals_id: ts_rsrc_id = 0
+#endif
 
 struct raylibGlobals {
     var someGlobalVariable: Int = 0
@@ -60,14 +62,17 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
     let version = strdup("2.0.0")
     let module_name = strdup("raylib")
     var buildIdString = "API\(PHP_API_VERSION)"
-    if ZTS != 0 {
-        buildIdString += ",TS" // Thread Safe
-    } else {
-        buildIdString += ",NTS" // Non-Thread Safe
-    }
-    if PHP_DEBUG != 0 {
-        buildIdString += ",debug"
-    }
+
+#if ZTS
+    buildIdString += ",TS" // Thread Safe
+#else
+    buildIdString += ",NTS" // Non-Thread Safe
+#endif
+
+#if PHP_DEBUG
+    buildIdString += ",debug"
+#endif
+
     let build_id = strdup(buildIdString)
     
     raylib_ini_entries_ptr = UnsafeMutablePointer<zend_ini_entry>.allocate(capacity: 1)
@@ -75,7 +80,8 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
     
     raylib_deps_ptr = UnsafeMutablePointer<zend_module_dep>.allocate(capacity: 1)
     raylib_deps_ptr?.initialize(to: zend_module_dep())
-    
+
+#if ZTS
     raylibModule_ptr = create_module_entry(
         module_name,
         version,
@@ -91,6 +97,22 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
         zm_globals_dtor_raylib,
         build_id
     )
+#else
+    raylibModule_ptr = create_module_entry(
+        module_name,
+        version,
+        raylib_functions_ptr,
+        zm_startup_raylib,
+        zm_shutdown_raylib,
+        zm_activate_raylib,
+        zm_deactivate_raylib,
+        zm_info_raylib,
+        MemoryLayout<raylibGlobals>.size,
+        zm_globals_ctor_raylib,
+        zm_globals_dtor_raylib,
+        build_id
+    )
+#endif
     
     return raylibModule_ptr!
 }

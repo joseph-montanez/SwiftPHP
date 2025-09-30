@@ -2,12 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://joseph-montanez.github.io/SwiftPHP/categories/</loc>
+    <loc>http://localhost:1313/SwiftPHP/categories/</loc>
   </url><url>
-    <loc>https://joseph-montanez.github.io/SwiftPHP/guides/</loc>
+    <loc>http://localhost:1313/SwiftPHP/guides/</loc>
   </url><url>
-    <loc>https://joseph-montanez.github.io/SwiftPHP/</loc>
+    <loc>http://localhost:1313/SwiftPHP/</loc>
   </url><url>
-    <loc>https://joseph-montanez.github.io/SwiftPHP/tags/</loc>
+    <loc>http://localhost:1313/SwiftPHP/guides/installation/</loc>
+  </url><url>
+    <loc>http://localhost:1313/SwiftPHP/tags/</loc>
   </url>
 </urlset>
