@@ -12,6 +12,7 @@ let phpLib = ProcessInfo.processInfo.environment["PHP_LIB_ROOT"]!
 let includePHPXCFramework = true
 // On other platforms, use the default relative path.
 let phpSrc = "build/php-src"
+let phpLib = ""
 #endif
 
 var targets: [Target] = [
@@ -65,10 +66,10 @@ var targets: [Target] = [
             ], .when(platforms: [.windows])),
 
             // --- C settings for other platforms ---
-            // .headerSearchPath(phpSrc, .when(platforms: [.linux, .macOS, .iOS])),
-            // .headerSearchPath("\(phpSrc)/main", .when(platforms: [.linux, .macOS, .iOS])),
-            // .headerSearchPath("\(phpSrc)/Zend", .when(platforms: [.linux, .macOS, .iOS])),
-            // .headerSearchPath("\(phpSrc)/TSRM", .when(platforms: [.linux, .macOS, .iOS])),
+            .headerSearchPath(phpSrc, .when(platforms: [.linux, .macOS, .iOS])),
+            .headerSearchPath("\(phpSrc)/main", .when(platforms: [.linux, .macOS, .iOS])),
+            .headerSearchPath("\(phpSrc)/Zend", .when(platforms: [.linux, .macOS, .iOS])),
+            .headerSearchPath("\(phpSrc)/TSRM", .when(platforms: [.linux, .macOS, .iOS])),
         ]
     ),
 
