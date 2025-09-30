@@ -9,6 +9,7 @@ I have chosen to make the API close to the C API for the first release so anyone
 
 Why not "X-language"? Well, PHP's C-API is mostly C-Macros which is not possible to replicate in any other language other than C++. 
 
+
  - **Zig** - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API
  - **Rust** - Someone already did this work in Rust https://github.com/davidcole1340/ext-php-rs
 
