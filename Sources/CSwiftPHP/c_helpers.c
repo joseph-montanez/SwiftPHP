@@ -168,7 +168,7 @@ zend_module_entry* create_module_entry(
     entry->size = sizeof(zend_module_entry);
     entry->zend_api = ZEND_MODULE_API_NO;
     #ifdef ZEND_DEBUG
-        entry->zend_debug = ZEND_DEBUG;
+        entry->zend_debug = 1;
     #else
         entry->zend_debug = 0;
     #endif

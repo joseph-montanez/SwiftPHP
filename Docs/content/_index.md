@@ -17,15 +17,15 @@ Why not "X-language"? Well, PHP's C-API is mostly C-Macros which is not possible
  - PHP 8.2 (Unsupported)
  - PHP 8.3 (Unsupported)
  - PHP 8.4 Thread-safe (ZTS)
- - PHP 8.5 (Pending Testing)
+ - PHP 8.5 (Pending)
 
 ## Supported Operating Systems
 
  - MacOS ARM64
- - Windows 11 x64 and ARM64
- - Windows 11 ARM64
- - Linux x64
- - Linux ARM64
+ - Windows 11 x64 (Pending)
+ - Windows 11 ARM64 (Work in Progress)
+ - Linux x64 (Pending)
+ - Linux ARM64 (Pending)
 
 ## Hello World Skeleton
 
@@ -248,9 +248,4 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
     
     return raylibModule_ptr!
 }
-
-
-
-
-
 ```

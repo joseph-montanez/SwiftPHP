@@ -10,6 +10,8 @@
   </url><url>
     <loc>http://localhost:1313/SwiftPHP/guides/installation/</loc>
   </url><url>
+    <loc>http://localhost:1313/SwiftPHP/guides/extension-basics/</loc>
+  </url><url>
     <loc>http://localhost:1313/SwiftPHP/tags/</loc>
   </url>
 </urlset>

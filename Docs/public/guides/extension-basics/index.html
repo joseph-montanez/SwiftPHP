@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/SwiftPHP/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=SwiftPHP/livereload" data-no-instant defer></script>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="PHP Extension Basics#
+PHP has 4 configurations from source code to configuration. This means from the source code to the runtime, you have to compile your extension to match the following.
+
+ZTS (Thread Safe) &#43; Debug
+ZTS (Thread Safe) &#43; Release
+NTS (Non-Thread Safe) &#43; Debug
+NTS (Non-Thread Safe) &#43; Release
+
+Do you need thread safety? PHP is ran a few different ways, if you are running this as a traditional web server setup, i.e Apache/Nginx and PHP-FPM then no you do not need thread safety. NTS (Non-thread safe) will run faster than ZTS since it wont have the thread context overhead. The times you&rsquo;d want ZTS is when PHP is run inside, effectively embedded into the process and that process is multithreaded. Mod_PHP for Apache is a great example.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/SwiftPHP/guides/extension-basics/">
+  <meta property="og:site_name" content="PHP Extensions in Swift">
+  <meta property="og:title" content="PHP Extension Basics">
+  <meta property="og:description" content="PHP Extension Basics# PHP has 4 configurations from source code to configuration. This means from the source code to the runtime, you have to compile your extension to match the following.
+ZTS (Thread Safe) &#43; Debug ZTS (Thread Safe) &#43; Release NTS (Non-Thread Safe) &#43; Debug NTS (Non-Thread Safe) &#43; Release Do you need thread safety? PHP is ran a few different ways, if you are running this as a traditional web server setup, i.e Apache/Nginx and PHP-FPM then no you do not need thread safety. NTS (Non-thread safe) will run faster than ZTS since it wont have the thread context overhead. The times you’d want ZTS is when PHP is run inside, effectively embedded into the process and that process is multithreaded. Mod_PHP for Apache is a great example.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="guides">
+<title>PHP Extension Basics | PHP Extensions in Swift</title>
+<link rel="icon" href="/SwiftPHP/favicon.png" >
+<link rel="manifest" href="/SwiftPHP/manifest.json">
+<link rel="canonical" href="http://localhost:1313/SwiftPHP/guides/extension-basics/">
+<link rel="stylesheet" href="/SwiftPHP/book.min.d124d6c76b11546b04023ef152f0ca77dd5bfd00e1638c75250d60e274cdc189.css" integrity="sha256-0STWx2sRVGsEAj7xUvDKd91b/QDhY4x1JQ1g4nTNwYk=" crossorigin="anonymous">
+
+
+  <script defer src="/SwiftPHP/fuse.min.js"></script>
+  <script defer src="/SwiftPHP/en.search.min.e36cb7b2a7176e5379152125768e02aaf3168ef4d619d023156cd5dae6861042.js" integrity="sha256-42y3sqcXblN5FSEldo4CqvMWjvTWGdAjFWzV2uaGEEI=" crossorigin="anonymous"></script>
+
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-guides">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/SwiftPHP/"><img src="/SwiftPHP/swiftphp-logo.svg" alt="Logo" /><span>PHP Extensions in Swift</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/" class="">
+      Guides</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/installation/" class="">
+      Installtion Guide</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/extension-basics/" class="active">
+      PHP Extension Basics</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/SwiftPHP/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>PHP Extension Basics</h3>
+
+  <label for="toc-control">
+    
+    <img src="/SwiftPHP/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#entry-point">Entry Point</a></li>
+    <li><a href="#startup--shutdown-functions">Startup &amp; Shutdown Functions</a></li>
+    <li><a href="#zend-module-entry">Zend Module Entry</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h1 id="php-extension-basics">PHP Extension Basics<a class="anchor" href="#php-extension-basics">#</a></h1>
+<p>PHP has 4 configurations from source code to configuration. This means from the source code to the runtime, you have to compile your extension to match the following.</p>
+<ul>
+<li>ZTS (Thread Safe) + Debug</li>
+<li>ZTS (Thread Safe) + Release</li>
+<li>NTS (Non-Thread Safe) + Debug</li>
+<li>NTS (Non-Thread Safe) + Release</li>
+</ul>
+<p>Do you need thread safety? PHP is ran a few different ways, if you are running this as a traditional web server setup, i.e Apache/Nginx and PHP-FPM then no you do not need thread safety. NTS (Non-thread safe) will run faster than ZTS since it wont have the thread context overhead. The times you&rsquo;d want ZTS is when PHP is run inside, effectively embedded into the process and that process is multithreaded. Mod_PHP for Apache is a great example.</p>
+<p>If you are using Swift&rsquo;s concurrency you do not explicty need PHP&rsquo;s thread-safe version, its only when PHP itself is accessing data between its instances across thread. So in Swift you can use threads, as long as you return to the main thread for the response back to PHP. If you are embedding PHP yourself, then it will be safer to assume you need thread safety.</p>
+<h2 id="entry-point">Entry Point<a class="anchor" href="#entry-point">#</a></h2>
+<p>All PHP extensions require <code>get_module</code> as the way to bootstrap your native PHP extesion. However with Swift, no function is directly C ABI compatible unless you annotate the function with <code>@_cdecl(&quot;get_module&quot;)</code>. This makes the functions ready to bootstrap your extension.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;get_module&#34;</span>)
+</span></span><span style="display:flex;"><span>@MainActor
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">get_module</span>() -&gt; UnsafeMutablePointer&lt;zend_module_entry&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//....</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><h2 id="startup--shutdown-functions">Startup &amp; Shutdown Functions<a class="anchor" href="#startup--shutdown-functions">#</a></h2>
+<p>Each extension has the ability to register shutdown and startup functions. They execute in this order:</p>
+<ul>
+<li>globals_ctor</li>
+<li>startup</li>
+<li>activate</li>
+<li>&lt;?php Execute PHP Script ?&gt;</li>
+<li>deactivate</li>
+<li>shutdown</li>
+<li>globals_dtor</li>
+</ul>
+<p>These are not required but allows you to work between instances of PHP runtimes (threads), or reject loading itself as an extension. You do need to annotate the functions with <code>@_cdecl</code> just like the entry point.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_startup_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_startup_raylib</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;zm_startup_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_shutdown_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_shutdown_raylib</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;zm_shutdown_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_activate_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_activate_raylib</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;zm_activate_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_deactivate_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_deactivate_raylib</span>(type: Int32, module_number: Int32) -&gt; Int32 {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;zm_deactivate_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Int32(SUCCESS.rawValue)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_globals_ctor_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_globals_ctor_raylib</span>(pointer: UnsafeMutableRawPointer?) {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;zm_globals_ctor_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> globals = pointer!.bindMemory(to: raylibGlobals.<span style="color:#66d9ef">self</span>, capacity: <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    globals.pointee.someGlobalVariable = <span style="color:#ae81ff">42</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zm_globals_dtor_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zm_globals_dtor_raylib</span>(pointer: UnsafeMutableRawPointer?) {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;zm_globals_dtor_raylib&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Optional cleanup code for globals</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><h2 id="zend-module-entry">Zend Module Entry<a class="anchor" href="#zend-module-entry">#</a></h2>
+<p>Inside your <code>get_module</code> you need to construct a <code>zend_module_entry</code> and return it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">ZTS</span>
+</span></span><span style="display:flex;"><span>    raylibModule_ptr = create_module_entry(
+</span></span><span style="display:flex;"><span>        module_name,
+</span></span><span style="display:flex;"><span>        version,
+</span></span><span style="display:flex;"><span>        raylib_functions_ptr,
+</span></span><span style="display:flex;"><span>        zm_startup_raylib,
+</span></span><span style="display:flex;"><span>        zm_shutdown_raylib,
+</span></span><span style="display:flex;"><span>        zm_activate_raylib,
+</span></span><span style="display:flex;"><span>        zm_deactivate_raylib,
+</span></span><span style="display:flex;"><span>        zm_info_raylib,
+</span></span><span style="display:flex;"><span>        MemoryLayout&lt;raylibGlobals&gt;.size,
+</span></span><span style="display:flex;"><span>        &amp;raylib_globals_id,
+</span></span><span style="display:flex;"><span>        zm_globals_ctor_raylib,
+</span></span><span style="display:flex;"><span>        zm_globals_dtor_raylib,
+</span></span><span style="display:flex;"><span>        build_id
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#else</span>
+</span></span><span style="display:flex;"><span>    raylibModule_ptr = create_module_entry(
+</span></span><span style="display:flex;"><span>        module_name,
+</span></span><span style="display:flex;"><span>        version,
+</span></span><span style="display:flex;"><span>        raylib_functions_ptr,
+</span></span><span style="display:flex;"><span>        zm_startup_raylib,
+</span></span><span style="display:flex;"><span>        zm_shutdown_raylib,
+</span></span><span style="display:flex;"><span>        zm_activate_raylib,
+</span></span><span style="display:flex;"><span>        zm_deactivate_raylib,
+</span></span><span style="display:flex;"><span>        zm_info_raylib,
+</span></span><span style="display:flex;"><span>        MemoryLayout&lt;raylibGlobals&gt;.size,
+</span></span><span style="display:flex;"><span>        zm_globals_ctor_raylib,
+</span></span><span style="display:flex;"><span>        zm_globals_dtor_raylib,
+</span></span><span style="display:flex;"><span>        build_id
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif</span></span></span></code></pre></div><p>PHP, depending on how its going to be build has shifting structs and <code>zend_module_entry</code> is one of them where ZTS (thread-safe) extesions also need to register a <code>globals_id</code>. Here is the raw C struct declared in PHP-src:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> _zend_module_entry {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> size;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> zend_api;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> zend_debug;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> zts;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> _zend_ini_entry <span style="color:#f92672">*</span>ini_entry;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> _zend_module_dep <span style="color:#f92672">*</span>deps;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> _zend_function_entry <span style="color:#f92672">*</span>functions;
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">zend_result</span> (<span style="color:#f92672">*</span>module_startup_func)(INIT_FUNC_ARGS);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">zend_result</span> (<span style="color:#f92672">*</span>module_shutdown_func)(SHUTDOWN_FUNC_ARGS);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">zend_result</span> (<span style="color:#f92672">*</span>request_startup_func)(INIT_FUNC_ARGS);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">zend_result</span> (<span style="color:#f92672">*</span>request_shutdown_func)(SHUTDOWN_FUNC_ARGS);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>info_func)(ZEND_MODULE_INFO_FUNC_ARGS);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>version;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">size_t</span> globals_size;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef ZTS
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	ts_rsrc_id<span style="color:#f92672">*</span> globals_id_ptr;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> globals_ptr;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>globals_ctor)(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>global);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>globals_dtor)(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>global);
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">zend_result</span> (<span style="color:#f92672">*</span>post_deactivate_func)(<span style="color:#66d9ef">void</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> module_started;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> type;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>handle;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> module_number;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>build_id;
+</span></span><span style="display:flex;"><span>};</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+  
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/SwiftPHP/guides/installation/" class="flex align-center">
+        <img src="/SwiftPHP/icons/backward.svg" class="book-icon" alt="Previous" title="Installtion Guide" />
+        <span>Installtion Guide</span>
+      </a>
+    
+    </span>
+    <span>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+        
+        
+
+ 
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#entry-point">Entry Point</a></li>
+    <li><a href="#startup--shutdown-functions">Startup &amp; Shutdown Functions</a></li>
+    <li><a href="#zend-module-entry">Zend Module Entry</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

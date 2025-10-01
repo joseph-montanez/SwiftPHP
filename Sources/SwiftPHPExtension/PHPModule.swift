@@ -69,7 +69,7 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
     buildIdString += ",NTS" // Non-Thread Safe
 #endif
 
-#if PHP_DEBUG
+#if ZEND_DEBUG
     buildIdString += ",debug"
 #endif
 

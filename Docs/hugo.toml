@@ -9,6 +9,7 @@ editURL = ""
 showLastUpdated = true
 disableSearch = true
 BookSection = '*'
+BookLogo = 'swiftphp-logo.svg'
 
 [module]
 [[module.imports]]
