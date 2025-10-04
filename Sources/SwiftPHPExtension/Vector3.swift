@@ -64,13 +64,11 @@ public func php_raylib_vector3_property_reader(_ obj: UnsafeMutablePointer<php_r
 @_cdecl("php_raylib_vector3_get_property_ptr_ptr")
 public func php_raylib_vector3_get_property_ptr_ptr(_ object: UnsafeMutablePointer<zend_object>?, _ name: UnsafeMutablePointer<zend_string>?, _ prop_type: CInt, _ cache_slot: UnsafeMutablePointer<UnsafeMutableRawPointer?>?) -> UnsafeMutablePointer<zval>? {
     let intern = fetchObject(object)
-    var hnd: UnsafeMutablePointer<raylib_vector3_prop_handler>? = nil
-    if let table = intern.pointee.prop_handler, let raw = zend_hash_find_ptr(table, name) {
-        hnd = raw.assumingMemoryBound(to: raylib_vector3_prop_handler.self)
-        return UnsafeMutablePointer<zval>(OpaquePointer(bitPattern: 0xDEADBEEF))
+    if let table = intern.pointee.prop_handler, zend_hash_find_ptr(table, name) != nil {
+        cache_slot?.pointee = nil
+        return nil
     }
-    if hnd == nil { return zend_std_get_property_ptr_ptr(object, name, prop_type, cache_slot) }
-    return UnsafeMutablePointer<zval>(OpaquePointer(bitPattern: 0xDEADBEEF))
+    return zend_std_get_property_ptr_ptr(object, name, prop_type, cache_slot)
 }
 
 @_cdecl("php_raylib_vector3_read_property")
@@ -101,13 +99,13 @@ public func php_raylib_vector3_has_property(_ object: UnsafeMutablePointer<zend_
         case CInt(ZEND_PROPERTY_EXISTS): return 1
         case CInt(ZEND_PROPERTY_NOT_EMPTY):
             var tmp = zval()
-            if let v = php_raylib_vector3_read_property(object, name, BP_VAR_IS, cache_slot, &tmp), v != UnsafeMutablePointer<zval>(OpaquePointer(bitPattern: 0xDEADBEEF)) {
+            if let v = php_raylib_vector3_read_property(object, name, BP_VAR_IS, cache_slot, &tmp) {
                 let isNull = (Z_TYPE_P(v) == IS_NULL); let ret: CInt = isNull ? 0 : 1; zval_ptr_dtor(v); return ret
             }
             return 0
         case CInt(ZEND_PROPERTY_ISSET):
             var tmp = zval()
-            if let v = php_raylib_vector3_read_property(object, name, BP_VAR_IS, cache_slot, &tmp), v != UnsafeMutablePointer<zval>(OpaquePointer(bitPattern: 0xDEADBEEF)) {
+            if let v = php_raylib_vector3_read_property(object, name, BP_VAR_IS, cache_slot, &tmp) {
                 let ret: CInt = (Z_TYPE_P(v) != IS_NULL) ? 1 : 0; zval_ptr_dtor(v); return ret
             }
             return 0
