@@ -30,6 +30,8 @@ zend_string* swift_zend_string_init(const char *str, size_t len, bool persistent
     return zend_string_init(str, len, persistent);
 }
 
+const zend_object_handlers* swift_zend_get_std_object_handlers(void) { return &std_object_handlers; }
+
 // sapi_module_struct* get_php_embed_module(void) {
 //     return &php_embed_module;
 // }

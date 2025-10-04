@@ -1,11 +1,6 @@
 import Foundation
 
-#if os(Linux) || os(Windows)
-    @preconcurrency import CSwiftPHP
-#else
-    @preconcurrency import PHP
-#endif
-
+@preconcurrency import CSwiftPHP
 
 public func ZSTR_IS_INTERNED(_ s: UnsafeMutablePointer<zend_string>) -> Bool {
     return (GC_FLAGS(UnsafeMutablePointer(OpaquePointer(s))) & UInt32(IS_STR_INTERNED)) != 0

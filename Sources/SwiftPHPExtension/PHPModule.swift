@@ -1,5 +1,6 @@
 import PHPCore
 import Foundation
+import os
 
 // Global pointers to hold data that will persist
 @MainActor var raylib_functions_ptr: UnsafeMutablePointer<zend_function_entry>? = nil
@@ -14,9 +15,11 @@ struct raylibGlobals {
     var someGlobalVariable: Int = 0
 }
 
+
 @_cdecl("zm_startup_raylib")
 func zm_startup_raylib(type: Int32, module_number: Int32) -> Int32 {
-    return Int32(SUCCESS.rawValue)
+    php_raylib_vector3_startup(type: type, module_number: module_number)
+    return SUCCESS.rawValue
 }
 
 @_cdecl("zm_shutdown_raylib")

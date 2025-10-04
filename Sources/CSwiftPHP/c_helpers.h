@@ -6,6 +6,7 @@
 #include "Zend/zend.h"
 
 zend_string* swift_zend_string_init(const char *str, size_t len, bool persistent);
+const zend_object_handlers* swift_zend_get_std_object_handlers(void);
 
 zend_result swift_zend_parse_parameters_2(uint32_t num_args, const char *type_spec, void *arg1, void *arg2);
 zend_result swift_zend_parse_parameters_3(uint32_t num_args, const char *type_spec, void *arg1, void *arg2, void *arg3);

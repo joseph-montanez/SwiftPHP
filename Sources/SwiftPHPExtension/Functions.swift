@@ -2,8 +2,9 @@ import PHPCore
 import Foundation
 
 @MainActor
-public let arginfo_confirm_raylib_compiled: [zend_internal_arg_info] =
+public let arginfo_confirm_raylib_compiled: [zend_internal_arg_info] = [
     ZEND_BEGIN_ARG_INFO_EX(name: "", return_reference: false, required_num_args: 0)
+]
 @_cdecl("zif_confirm_raylib_compiled")
 public func zif_confirm_raylib_compiled(
     _ execute_data: UnsafeMutablePointer<zend_execute_data>?, 
@@ -27,9 +28,10 @@ public func zif_confirm_raylib_compiled(
 }
 
 @MainActor
-public let arginfo_raylib_hello: [zend_internal_arg_info] =
-    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(name: "raylib_hello", return_reference: false, required_num_args: 0, type: UInt32(IS_STRING), allow_null: false)
-    + [ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(pass_by_ref: false, name: "str", type_hint: UInt32(IS_STRING), allow_null: true, default_value: "\"\"")]
+public let arginfo_raylib_hello: [zend_internal_arg_info] = [
+    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(name: "raylib_hello", return_reference: false, required_num_args: 0, type: UInt32(IS_STRING), allow_null: false),
+    ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(pass_by_ref: false, name: "str", type_hint: UInt32(IS_STRING), allow_null: true, default_value: "\"\"")
+]
 @_cdecl("zif_raylib_hello")
 public func zif_raylib_hello(execute_data: UnsafeMutablePointer<zend_execute_data>?, return_value: UnsafeMutablePointer<zval>?) {
     var var_str: UnsafeMutablePointer<CChar>? = nil

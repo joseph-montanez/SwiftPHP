@@ -1,3 +1,5 @@
+@preconcurrency @_exported import CSwiftPHP
+
 public func ZEND_NS_NAME(ns: String, name: String) -> String {
     return "\(ns)\\\(name)"
 }
@@ -101,7 +103,7 @@ public func ZEND_FE(name: String, handler: ZifHandler?, arg_info: [zend_internal
     
     // Allocate persistent memory for the arg_info array and get a pointer to it.
     let arg_info_ptr = arg_info.flatMap { info -> UnsafePointer<zend_internal_arg_info>? in
-        let ptr = UnsafeMutablePointer<zend_internal_arg_info>.allocate(capacity: info.count)
+        let ptr: UnsafeMutablePointer<zend_internal_arg_info> = UnsafeMutablePointer<zend_internal_arg_info>.allocate(capacity: info.count)
         ptr.initialize(from: info, count: info.count)
         return UnsafePointer(ptr)
     }
@@ -253,17 +255,17 @@ public func ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX2(
 }
 
 // Other BEGIN_ARG macros are just wrappers around the EX2 version.
-public func ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(name: String, return_reference: Bool, required_num_args: Int32, type: UInt32, allow_null: Bool) -> [zend_internal_arg_info] {
+public func ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(name: String, return_reference: Bool, required_num_args: Int32, type: UInt32, allow_null: Bool) -> zend_internal_arg_info {
     return ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX2(name: name, return_reference: return_reference, required_num_args: required_num_args, type: type, allow_null: allow_null, is_tentative_return_type: false)
 }
 
-public func ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(name: String, type: UInt32, allow_null: Bool) -> [zend_internal_arg_info] {
+public func ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(name: String, type: UInt32, allow_null: Bool) -> zend_internal_arg_info {
     return ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX2(name: name, return_reference: false, required_num_args: -1, type: type, allow_null: allow_null, is_tentative_return_type: false)
 }
 
 // MARK: - Argument List Initializers (BEGIN_ARG...)
 
-public func ZEND_BEGIN_ARG_INFO_EX(name: String, return_reference: Bool, required_num_args: Int32) -> [zend_internal_arg_info] {
+public func ZEND_BEGIN_ARG_INFO_EX(name: String, return_reference: Bool, required_num_args: Int32) -> zend_internal_arg_info {
     let flags = _ZEND_ARG_INFO_FLAGS(pass_by_ref: return_reference, is_variadic: false, is_tentative: false)
     let type = ZEND_TYPE_INIT_NONE(flags)
     
@@ -271,17 +273,17 @@ public func ZEND_BEGIN_ARG_INFO_EX(name: String, return_reference: Bool, require
     let name_ptr = UnsafeRawPointer(bitPattern: Int(required_num_args))?.assumingMemoryBound(to: CChar.self)
 
     let firstElement = zend_internal_arg_info(name: name_ptr, type: type, default_value: nil)
-    return [firstElement]
+    return firstElement
 }
 
-public func ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX2(name: String, return_reference: Bool, required_num_args: Int32, type: UInt32, allow_null: Bool, is_tentative_return_type: Bool) -> [zend_internal_arg_info] {
+public func ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX2(name: String, return_reference: Bool, required_num_args: Int32, type: UInt32, allow_null: Bool, is_tentative_return_type: Bool) -> zend_internal_arg_info {
     let flags = _ZEND_ARG_INFO_FLAGS(pass_by_ref: return_reference, is_variadic: false, is_tentative: is_tentative_return_type)
     let returnType = ZEND_TYPE_INIT_CODE(type, allow_null: allow_null, flags)
 
     let name_ptr = UnsafeRawPointer(bitPattern: Int(required_num_args))?.assumingMemoryBound(to: CChar.self)
     
     let firstElement = zend_internal_arg_info(name: name_ptr, type: returnType, default_value: nil)
-    return [firstElement]
+    return firstElement
 }
 
 
@@ -414,6 +416,47 @@ public func Z_PARAM_STRING(state: inout ParseState, dest: UnsafeMutablePointer<U
 
 public func Z_PARAM_STRING_OR_NULL(state: inout ParseState, dest: UnsafeMutablePointer<UnsafeMutablePointer<CChar>?>, destLen: UnsafeMutablePointer<Int>) throws {
     if !Z_PARAM_STRING_EX(state: &state, dest: dest, destLen: destLen, checkNull: true, deref: false) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+public func Z_PARAM_DOUBLE_EX(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<CDouble>?,
+    isNull: UnsafeMutablePointer<Bool>? = nil,
+    checkNull: Bool,
+    deref: Bool
+) -> Bool {
+    Z_PARAM_PROLOGUE(state: &state, deref: deref, separate: false)
+
+    if state.arg == nil {
+        return true
+    }
+
+    if !zend_parse_arg_double(state.arg, dest, isNull, checkNull, state.i) {
+        state.expectedType = checkNull ? Z_EXPECTED_DOUBLE_OR_NULL : Z_EXPECTED_DOUBLE
+        state.errorCode = ZPP_ERROR_WRONG_ARG
+        return false
+    }
+
+    return true
+}
+
+public func Z_PARAM_DOUBLE(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<CDouble>?
+) throws {
+    if !Z_PARAM_DOUBLE_EX(state: &state, dest: dest, isNull: nil, checkNull: false, deref: false) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+public func Z_PARAM_DOUBLE_OR_NULL(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<CDouble>?,
+    isNull: UnsafeMutablePointer<Bool>?
+) throws {
+    if !Z_PARAM_DOUBLE_EX(state: &state, dest: dest, isNull: isNull, checkNull: true, deref: false) {
         throw ParameterParseError.wrongArg
     }
 }
@@ -721,4 +764,108 @@ public func RETURN_TRUE(_ returnValue: UnsafeMutablePointer<zval>?) {
 
 public func RETURN_THROWS(_ returnValue: UnsafeMutablePointer<zval>?) {
     assert(EG(\.exception) != nil, "RETURN_THROWS was called but no exception was set.")
+}
+
+
+
+/*
+#define INIT_CLASS_ENTRY(class_container, class_name, functions) \
+	INIT_CLASS_ENTRY_EX(class_container, class_name, strlen(class_name), functions)
+
+#define INIT_CLASS_ENTRY_EX(class_container, class_name, class_name_len, functions) \
+	{															\
+		memset(&class_container, 0, sizeof(zend_class_entry)); \
+		class_container.name = zend_string_init_interned(class_name, class_name_len, 1); \
+		class_container.default_object_handlers = &std_object_handlers;	\
+		class_container.info.internal.builtin_functions = functions;	\
+	}
+*/
+
+
+public func INIT_CLASS_ENTRY_EX(
+    _ class_container: inout zend_class_entry,
+    _ class_name: UnsafePointer<CChar>,
+    _ class_name_len: Int,
+    _ functions: UnsafePointer<zend_function_entry>?
+) {
+    var mutableStdObjectHandlers: zend_object_handlers = std_object_handlers
+
+    class_container = zend_class_entry()
+
+    class_container.name = zend_string_init_interned(class_name, class_name_len, true)
+
+    class_container.default_object_handlers = withUnsafePointer(to: &mutableStdObjectHandlers) { $0 }
+
+    class_container.info.internal.builtin_functions = functions
+}
+
+
+public func INIT_CLASS_ENTRY(
+    _ class_container: inout zend_class_entry,
+    _ class_name: String,
+    _ functions: UnsafePointer<zend_function_entry>?
+) {
+    class_name.withCString { cString in
+        INIT_CLASS_ENTRY_EX(
+            &class_container,
+            cString,
+            class_name.utf8.count,
+            functions
+        )
+    }
+}
+
+public func INIT_NS_CLASS_ENTRY(
+    _ class_container: inout zend_class_entry,
+    _ ns: String,
+    _ class_name: String,
+    _ functions: UnsafePointer<zend_function_entry>?
+) {
+    let namespacedClassName = "\(ns)\\\(class_name)"
+    
+    INIT_CLASS_ENTRY(
+        &class_container,
+        namespacedClassName,
+        functions
+    )
+}
+
+@MainActor
+public func INIT_CLASS_ENTRY_INIT_METHODS(
+    _ class_container: inout zend_class_entry,
+    _ functions: UnsafePointer<zend_function_entry>?
+) {
+    var mutableStdObjectHandlers: zend_object_handlers = std_object_handlers
+    
+    class_container.default_object_handlers = withUnsafePointer(to: &mutableStdObjectHandlers) { $0 }
+
+    class_container.constructor = nil
+    class_container.destructor = nil
+    class_container.clone = nil
+    class_container.serialize = nil
+    class_container.unserialize = nil
+    class_container.create_object = nil
+    class_container.get_static_method = nil
+    class_container.__call = nil
+    class_container.__callstatic = nil
+    class_container.__tostring = nil
+    class_container.__get = nil
+    class_container.__set = nil
+    class_container.__unset = nil
+    class_container.__isset = nil
+    class_container.__debugInfo = nil
+    class_container.__serialize = nil
+    class_container.__unserialize = nil
+    class_container.parent = nil
+    class_container.num_interfaces = 0
+    class_container.trait_names = nil
+    class_container.num_traits = 0
+    class_container.trait_aliases = nil
+    class_container.trait_precedences = nil
+    class_container.interfaces = nil
+    class_container.get_iterator = nil
+    class_container.iterator_funcs_ptr = nil
+    class_container.arrayaccess_funcs_ptr = nil
+    class_container.info.internal.module = nil
+    class_container.info.internal.builtin_functions = functions
 }

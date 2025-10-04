@@ -56,12 +56,12 @@ func ZEND_CALL_NUM_ARGS(_ call: zend_execute_data) -> UInt32 {
 }
 
 
-public func ZEND_BEGIN_ARG_INFO() -> [zend_internal_arg_info] {
+public func ZEND_BEGIN_ARG_INFO() -> zend_internal_arg_info {
     return ZEND_BEGIN_ARG_INFO_EX(name: "", return_reference: false, required_num_args: -1)
 }
 
-public func ZEND_END_ARG_INFO() -> [zend_internal_arg_info] {
-    return []
+public func ZEND_END_ARG_INFO() -> Void {
+    return
 }
 
 

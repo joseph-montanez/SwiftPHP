@@ -1,10 +1,27 @@
-#if os(Linux) || os(Windows)
-    @preconcurrency @_exported import CSwiftPHP
-#else
-    @preconcurrency @_exported import PHP
-#endif
+@preconcurrency @_exported import CSwiftPHP
 
 @_exported import CSwiftPHP
+
+@inlinable
+public func PHP_FE(
+    _ name: String,
+    _ handler: ZifHandler?,
+    _ arg_info: [zend_internal_arg_info]?
+) -> zend_function_entry {
+    ZEND_FE(name: name, handler: handler, arg_info: arg_info)
+}
+
+@inlinable
+public func PHP_ME(
+    _ className: String,
+    _ methodName: String,
+    _ handler: ZifHandler?,
+    _ arg_info: [zend_internal_arg_info]?,
+    _ flags: Int32
+) -> zend_function_entry {
+    ZEND_ME(classname: className, name: methodName, handler: handler, arg_info: arg_info, flags: UInt32(flags))
+}
+
 
 public struct PhpFunctionContext {
     public var funcName: UnsafeMutablePointer<zend_string>
@@ -127,4 +144,22 @@ public struct FunctionListBuilder {
         
         return pointer
     }
+}
+
+
+// @_silgen_name("std_object_handlers")
+// var std_object_handlers: zend_object_handlers
+
+// zend_get_std_object_handlers() \
+// 	(&std_object_handlers)
+
+// public func zend_get_std_object_handlers() -> UnsafePointer<zend_object_handlers> {
+//     return UnsafePointer(&std_object_handlers)
+// }
+
+@_silgen_name("swift_zend_get_std_object_handlers")
+func swift_zend_get_std_object_handlers() -> UnsafePointer<zend_object_handlers>!
+
+public func zend_std_handlers_ptr_shim() -> UnsafePointer<zend_object_handlers> {
+    swift_zend_get_std_object_handlers()
 }
