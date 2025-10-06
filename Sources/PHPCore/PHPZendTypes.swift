@@ -400,22 +400,38 @@ public func ZEND_TYPE_INIT_INTERSECTION(_ ptr: UnsafeMutableRawPointer?, _ extra
 }
 
 public func ZEND_TYPE_INIT_CLASS(_ class_name: String, allow_null: Bool, _ extra_flags: UInt32) -> zend_type {
+    #if os(Windows)
+    let name_ptr = UnsafeMutableRawPointer(_strdup(class_name))
+    #else
     let name_ptr = UnsafeMutableRawPointer(strdup(class_name))
+    #endif
     return ZEND_TYPE_INIT_PTR(name_ptr, _ZEND_TYPE_NAME_BIT, allow_null: allow_null, extra_flags)
 }
 
 public func ZEND_TYPE_INIT_CLASS_MASK(_ class_name: String, _ type_mask: UInt32) -> zend_type {
+    #if os(Windows)
+    let name_ptr = UnsafeMutableRawPointer(_strdup(class_name))
+    #else
     let name_ptr = UnsafeMutableRawPointer(strdup(class_name))
+    #endif
     return ZEND_TYPE_INIT_PTR_MASK(name_ptr, _ZEND_TYPE_NAME_BIT | type_mask)
 }
 
 public func ZEND_TYPE_INIT_CLASS_CONST(_ class_name: String, allow_null: Bool, _ extra_flags: UInt32) -> zend_type {
+    #if os(Windows)
+    let name_ptr = UnsafeMutableRawPointer(_strdup(class_name))
+    #else
     let name_ptr = UnsafeMutableRawPointer(strdup(class_name))
+    #endif
     return ZEND_TYPE_INIT_PTR(name_ptr, _ZEND_TYPE_LITERAL_NAME_BIT, allow_null: allow_null, extra_flags)
 }
 
 public func ZEND_TYPE_INIT_CLASS_CONST_MASK(_ class_name: String, _ type_mask: UInt32) -> zend_type {
+    #if os(Windows)
+    let name_ptr = UnsafeMutableRawPointer(_strdup(class_name))
+    #else
     let name_ptr = UnsafeMutableRawPointer(strdup(class_name))
+    #endif
     return ZEND_TYPE_INIT_PTR_MASK(name_ptr, _ZEND_TYPE_LITERAL_NAME_BIT | type_mask)
 }
 

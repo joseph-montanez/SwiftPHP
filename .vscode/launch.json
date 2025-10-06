@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftPHP}",
+            "name": "Debug SwiftPHPClient",
+            "program": "${workspaceFolder:SwiftPHP}/.build/debug/SwiftPHPClient",
+            "preLaunchTask": "swift: Build Debug SwiftPHPClient"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftPHP}",
+            "name": "Release SwiftPHPClient",
+            "program": "${workspaceFolder:SwiftPHP}/.build/release/SwiftPHPClient",
+            "preLaunchTask": "swift: Build Release SwiftPHPClient"
+        }
+    ]
+}

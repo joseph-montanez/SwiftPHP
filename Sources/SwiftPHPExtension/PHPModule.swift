@@ -1,6 +1,5 @@
 import PHPCore
 import Foundation
-import os
 
 // Global pointers to hold data that will persist
 @MainActor var raylib_functions_ptr: UnsafeMutablePointer<zend_function_entry>? = nil
@@ -44,8 +43,8 @@ func zm_info_raylib(zend_module: UnsafeMutableRawPointer?) {
 
 @_cdecl("zm_globals_ctor_raylib")
 func zm_globals_ctor_raylib(pointer: UnsafeMutableRawPointer?) {
-    let globals = pointer!.bindMemory(to: raylibGlobals.self, capacity: 1)
-    globals.pointee.someGlobalVariable = 42
+    // let globals = pointer!.bindMemory(to: raylibGlobals.self, capacity: 1)
+    // globals.pointee.someGlobalVariable = 42
 }
 
 @_cdecl("zm_globals_dtor_raylib")
@@ -74,6 +73,10 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
 
 #if ZEND_DEBUG
     buildIdString += ",debug"
+#endif
+
+#if ZEND_WIN32
+    buildIdString += ",VS17"
 #endif
 
     let build_id = strdup(buildIdString)

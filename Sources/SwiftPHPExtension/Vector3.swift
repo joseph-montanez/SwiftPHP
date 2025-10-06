@@ -221,13 +221,13 @@ public func php_raylib_vector3_clone(_ old_object: UnsafeMutablePointer<zend_obj
     return new_object
 }
 
-@preconcurrency
-let arginfo_vector3__construct = [
-    ZEND_BEGIN_ARG_INFO_EX(name: "__construct", return_reference: false, required_num_args: 0),
-    ZEND_ARG_TYPE_MASK(passByRef: false, name: "x", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-    ZEND_ARG_TYPE_MASK(passByRef: false, name: "y", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-    ZEND_ARG_TYPE_MASK(passByRef: false, name: "z", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-]
+// @preconcurrency
+// let arginfo_vector3__construct = [
+//     ZEND_BEGIN_ARG_INFO_EX(name: "__construct", return_reference: false, required_num_args: 0),
+//     ZEND_ARG_TYPE_MASK(passByRef: false, name: "x", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+//     ZEND_ARG_TYPE_MASK(passByRef: false, name: "y", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+//     ZEND_ARG_TYPE_MASK(passByRef: false, name: "z", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+// ]
 
 @_cdecl("vector3__construct")
 public func vector3__construct(_ execute_data: UnsafeMutablePointer<zend_execute_data>?, _ _: UnsafeMutablePointer<zval>?) {
@@ -247,6 +247,13 @@ public func vector3__construct(_ execute_data: UnsafeMutablePointer<zend_execute
 }
 
 public func php_raylib_vector3_startup(type: CInt, module_number: CInt) {
+    let arginfo_vector3__construct = [
+        ZEND_BEGIN_ARG_INFO_EX(name: "__construct", return_reference: false, required_num_args: 0),
+        ZEND_ARG_TYPE_MASK(passByRef: false, name: "x", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+        ZEND_ARG_TYPE_MASK(passByRef: false, name: "y", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+        ZEND_ARG_TYPE_MASK(passByRef: false, name: "z", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+    ]
+
     let S = V3State.shared
     var ce = zend_class_entry()
 

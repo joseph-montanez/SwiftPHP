@@ -30,5 +30,5 @@ func EX_NUM_ARGS(_ execute_data: UnsafeMutablePointer<zend_execute_data>?) -> CI
         return 0
     }
     
-    return CInt(ZEND_CALL_NUM_ARGS(dataPtr.pointee))
+    return CInt(dataPtr.pointee.This.u2.num_args)
 }

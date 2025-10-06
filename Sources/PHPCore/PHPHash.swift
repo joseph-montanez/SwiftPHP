@@ -1,6 +1,16 @@
 import Foundation
 
-// MARK: - Existing Code (Preserved)
+#if !DEBUG && HAVE_BUILTIN_CONSTANT_P
+@inline(__always)
+public func zend_new_array(_ size: UInt32) -> UnsafeMutablePointer<zend_array>! {
+    size <= HT_MIN_SIZE ? _zend_new_array_0() : _zend_new_array(size)
+}
+#else
+@inline(__always)
+public func zend_new_array(_ size: UInt32) -> UnsafeMutablePointer<zend_array>! {
+    _zend_new_array(size)
+}
+#endif
 
 let HASH_FLAG_PACKED: UInt32 = 1 << 2
 

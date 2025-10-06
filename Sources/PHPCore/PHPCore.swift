@@ -1,6 +1,6 @@
 @preconcurrency @_exported import CSwiftPHP
 
-@_exported import CSwiftPHP
+// @_exported import CSwiftPHP
 
 @inlinable
 public func PHP_FE(

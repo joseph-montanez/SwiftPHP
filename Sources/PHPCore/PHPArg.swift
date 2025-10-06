@@ -39,25 +39,30 @@ public func _ZEND_ARG_INFO_FLAGS(passByRef: Int, isVariadic: Bool, isTentative: 
     return (passByRef << _ZEND_SEND_MODE_SHIFT) | variadicFlag | tentativeFlag
 }
 
+// A C function that takes a C string and returns a C string
 public func ZEND_ARG_TYPE_MASK(passByRef: Bool, name: String, typeMask: UInt32, defaultValue: String?) -> zend_internal_arg_info {
+    #if os(Windows)
+    let cName = _strdup(name)
+    #else
     let cName = strdup(name)
-    
+    #endif
+
     // let cDefaultValue: UnsafePointer<CChar>? = defaultValue.flatMap { strdup($0) }
+    #if os(Windows)
+    let cDefaultValue: UnsafePointer<CChar>? = defaultValue.flatMap { _strdup($0).map { UnsafePointer($0) } }
+    #else
     let cDefaultValue: UnsafePointer<CChar>? = defaultValue.flatMap { strdup($0).map { UnsafePointer($0) } }
+    #endif
 
-    
-    let flags = _ZEND_ARG_INFO_FLAGS(passByRef: passByRef ? 1 : 0, isVariadic: false, isTentative: false)
-    let typeInfo = ZEND_TYPE_INIT_MASK(typeMask | UInt32(flags))
-    return zend_internal_arg_info(name: cName, type: typeInfo, default_value: cDefaultValue)
+    let flags = _ZEND_ARG_INFO_FLAGS(pass_by_ref: passByRef, is_variadic: false, is_tentative: false)
+    let type = ZEND_TYPE_INIT_MASK(typeMask | flags)
+    return zend_internal_arg_info(name: cName, type: type, default_value: cDefaultValue)
 }
-
-func ZEND_CALL_NUM_ARGS(_ call: zend_execute_data) -> UInt32 {
-    return call.This.u2.num_args
-}
-
 
 public func ZEND_BEGIN_ARG_INFO() -> zend_internal_arg_info {
-    return ZEND_BEGIN_ARG_INFO_EX(name: "", return_reference: false, required_num_args: -1)
+    let flags = _ZEND_ARG_INFO_FLAGS(pass_by_ref: false, is_variadic: false, is_tentative: false)
+    let type = ZEND_TYPE_INIT_NONE(Int(flags))
+    return zend_internal_arg_info(name: nil, type: type, default_value: nil)
 }
 
 public func ZEND_END_ARG_INFO() -> Void {

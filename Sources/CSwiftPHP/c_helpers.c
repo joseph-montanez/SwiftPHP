@@ -13,15 +13,16 @@
 #ifndef _WINDOWS
 # define _WINDOWS 1
 #endif
-#ifndef ZTS
-# define ZTS 1
-#endif
+// #ifndef ZTS
+// # define ZTS 1
+// #endif
 #ifndef ZEND_DEBUG
 # define ZEND_DEBUG 0
 #endif
 
-#include "main/php.h"
-#include "Zend/zend.h"
+// #include "main/php.h"
+// #include "Zend/zend.h"
+#include "c_helpers.h"
 #include "Zend/zend_exceptions.h"
 // TODO: embed versus module
 //#include "sapi/embed/php_embed.h"
@@ -205,20 +206,9 @@ zend_module_entry* create_module_entry(
 
 
 #ifndef ZTS
-zend_executor_globals* get_executor_globals() {
-    return &executor_globals;
-}
-zend_compiler_globals* get_compiler_globals() {
-    return &compiler_globals;
-}
-#endif
-
-
-#ifdef ZTS
-size_t get_executor_globals_offset() {
-    return executor_globals_offset;
-}
-size_t get_compiler_globals_offset() {
-    return compiler_globals_offset;
-}
+zend_executor_globals* get_executor_globals(void) { return &executor_globals; }
+zend_compiler_globals* get_compiler_globals(void) { return &compiler_globals; }
+#else
+size_t get_executor_globals_offset(void) { return executor_globals_offset; }
+size_t get_compiler_globals_offset(void) { return compiler_globals_offset; }
 #endif

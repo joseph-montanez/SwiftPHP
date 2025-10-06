@@ -19,9 +19,25 @@ var targets: [Target] = [
         name: "PHPCore",
         dependencies: [
             "CSwiftPHP",
-            .target(name: "CPHP", condition: .when(platforms: [.linux, .windows])),
+            // .target(name: "CPHP", condition: .when(platforms: [.linux, .windows])),
         ],
         path: "Sources/PHPCore",
+        cSettings: [
+            .define("ZEND_WIN32", .when(platforms: [.windows])),
+            .define("PHP_WIN32",  .when(platforms: [.windows])),
+            .define("WIN32",      .when(platforms: [.windows])),
+            .define("_WIN32",     .when(platforms: [.windows])),
+            .define("_WINDOWS",   .when(platforms: [.windows])),
+            .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
+            // .unsafeFlags([
+            //     "-I", phpSrc,
+            //     "-I", "\(phpSrc)/main",
+            //     "-I", "\(phpSrc)/Zend",
+            //     "-I", "\(phpSrc)/TSRM",
+            //     "-I", "\(phpSrc)/win32",
+            //     "-fno-builtin",
+            // ], .when(platforms: [.windows])),
+        ],
         swiftSettings: [
             .define("ZTS", .when(platforms: [.macOS, .iOS])),
             .unsafeFlags([
@@ -36,13 +52,19 @@ var targets: [Target] = [
                 "-Xcc","-I","-Xcc","PHP.xcframework/ios-arm64/Headers/Zend",
                 "-Xcc","-I","-Xcc","PHP.xcframework/ios-arm64/Headers/TSRM",
             ], .when(platforms: [.iOS])),
+            .unsafeFlags([
+                "-Xcc","-I","-Xcc","\(phpSrc)",
+                "-Xcc","-I","-Xcc","\(phpSrc)/main",
+                "-Xcc","-I","-Xcc","\(phpSrc)/Zend",
+                "-Xcc","-I","-Xcc","\(phpSrc)/TSRM",
+            ], .when(platforms: [.windows])),
         ]
     ),
 
     .target(
         name: "CSwiftPHP",
         dependencies: [
-            .target(name: "CPHP", condition: .when(platforms: [.linux, .windows])),
+            // .target(name: "CPHP", condition: .when(platforms: [.linux, .windows])),
         ],
         path: "Sources/CSwiftPHP",
         publicHeadersPath: ".",
@@ -70,8 +92,7 @@ var targets: [Target] = [
             .define("WIN32",      .when(platforms: [.windows])),
             .define("_WIN32",     .when(platforms: [.windows])),
             .define("_WINDOWS",   .when(platforms: [.windows])),
-            .define("ZTS",        .when(platforms: [.windows])),
-            .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
+            // .define("ZTS", to: "0", .when(platforms: [.windows])), 
             .unsafeFlags([
                 "-I", phpSrc,
                 "-I", "\(phpSrc)/main",
@@ -80,30 +101,30 @@ var targets: [Target] = [
                 "-I", "\(phpSrc)/win32",
                 "-fno-builtin",
             ], .when(platforms: [.windows])),
+        ],
+        swiftSettings: [
+            .unsafeFlags([
+                "-Xcc","-I","-Xcc","\(phpSrc)",
+                "-Xcc","-I","-Xcc","\(phpSrc)/main",
+                "-Xcc","-I","-Xcc","\(phpSrc)/Zend",
+                "-Xcc","-I","-Xcc","\(phpSrc)/TSRM",
+            ], .when(platforms: [.windows])),
         ]
     ),
 
-    .target(
-        name: "SwiftPHP",
-        dependencies: [
-            "PHPCore",
-            .target(name: "PHP", condition: .when(platforms: [.macOS, .iOS])),
-        ],
-        path: "Sources/SwiftPHP"
-    ),
-
-    .systemLibrary(
-        name: "CPHP",
-        path: "Sources/CPHP",
-        pkgConfig: "php",
-        providers: [.apt(["php8.4-dev","libphp8.4-embed"])]
-    ),
+    // .systemLibrary(
+    //     name: "CPHP",
+    //     path: "Sources/CPHP",
+    //     pkgConfig: "php",
+    //     providers: [.apt(["php8.4-dev","libphp8.4-embed"])]
+    // ),
 
     .target(
         name: "SwiftPHPExtension",
         dependencies: [
             "PHPCore",
-            .target(name: "CPHP", condition: .when(platforms: [.linux, .windows])),
+            "CSwiftPHP",
+            // .target(name: "CPHP", condition: .when(platforms: [.linux, .windows])),
         ],
         path: "Sources/SwiftPHPExtension",
         cSettings: [
@@ -124,6 +145,9 @@ var targets: [Target] = [
             ], .when(platforms: [.windows])),
         ],
         swiftSettings: [
+            .define("ZEND_WIN32", .when(platforms: [.windows])),
+            .define("PHP_WIN32",  .when(platforms: [.windows])),
+            .define("WIN32",      .when(platforms: [.windows])),
             .define("ZEND_DEBUG", .when(platforms: [.macOS, .iOS])),
             .define("ZTS", .when(platforms: [.macOS, .iOS])),
             .unsafeFlags([
@@ -138,10 +162,16 @@ var targets: [Target] = [
                 "-Xcc","-I","-Xcc","PHP.xcframework/ios-arm64/Headers/Zend",
                 "-Xcc","-I","-Xcc","PHP.xcframework/ios-arm64/Headers/TSRM",
             ], .when(platforms: [.iOS])),
+            .unsafeFlags([
+                "-Xcc","-I","-Xcc","\(phpSrc)",
+                "-Xcc","-I","-Xcc","\(phpSrc)/main",
+                "-Xcc","-I","-Xcc","\(phpSrc)/Zend",
+                "-Xcc","-I","-Xcc","\(phpSrc)/TSRM",
+            ], .when(platforms: [.windows])),
         ],
         linkerSettings: [
             .unsafeFlags(["-Xlinker","-undefined","-Xlinker","dynamic_lookup"], .when(platforms: [.macOS, .iOS])),
-            .unsafeFlags(["-L", phpLib, "\(phpLib)/php8.lib"], .when(platforms: [.windows])),
+            .unsafeFlags(["-L\(phpLib)", "\(phpLib)/php8.lib"], .when(platforms: [.windows])),
         ]
     ),
 ]
@@ -154,11 +184,8 @@ let package = Package(
     name: "SwiftPHP",
     platforms: [.macOS(.v14), .iOS(.v13)],
     products: [
-        .library(name: "PHP", targets: ["PHPCore"]),
+        // .library(name: "PHP", targets: ["PHPCore"]),
         .library(name: "SwiftPHPExtension", type: .dynamic, targets: ["SwiftPHPExtension"]),
-    ],
-    dependencies: [
-        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0-latest"),
     ],
     targets: targets
 )

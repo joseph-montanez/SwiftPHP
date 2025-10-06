@@ -7,7 +7,7 @@
         #include "windows.h"
     #endif
 #elif __linux__
-    #include "linux.h" // Linux-specific Chipmunk2D headers or configuration
+    #include "linux.h"
 #else
    #error "Unsupported platform"
 #endif
