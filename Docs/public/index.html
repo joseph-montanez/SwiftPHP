@@ -10,14 +10,14 @@ https://github.com/alex-shpak/hugo-book
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.
-I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.">
+I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C based PHP extensions easier.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/SwiftPHP/">
   <meta property="og:site_name" content="PHP Extensions in Swift">
   <meta property="og:title" content="Hello Swift">
   <meta property="og:description" content="SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.
-I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.">
+I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C based PHP extensions easier.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="website">
 <title>Hello Swift | PHP Extensions in Swift</title>
@@ -28,9 +28,10 @@ I have chosen to make the API close to the C API for the first release so anyone
 
 
   <script defer src="/SwiftPHP/fuse.min.js"></script>
-  <script defer src="/SwiftPHP/en.search.min.f419301a12f4c2fc543635220c261bbca4e2d77c805782d633de179d9113fc09.js" integrity="sha256-9BkwGhL0wvxUNjUiDCYbvKTi13yAV4LWM94XnZET/Ak=" crossorigin="anonymous"></script>
+  <script defer src="/SwiftPHP/en.search.min.663512c319c973094efefcc283bd069cf1835092106dbe2f930b51226bfd4f74.js" integrity="sha256-ZjUSwxnJcwlO/vzCg70GnPGDUJIQbb4vkwtRImv9T3Q=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="http://localhost:1313/SwiftPHP/index.xml" title="PHP Extensions in Swift" />
 
+     
   
 </head>
 <body dir="ltr" class="book-kind-home book-type-page">
@@ -108,6 +109,20 @@ I have chosen to make the API close to the C API for the first release so anyone
   
 
   
+    <a href="/SwiftPHP/guides/performance/" class="">
+      Performance</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
     <a href="/SwiftPHP/guides/extension-basics/" class="">
       PHP Extension Basics</a>
   
@@ -173,6 +188,7 @@ I have chosen to make the API close to the C API for the first release so anyone
   <ul>
     <li><a href="#supported-php-versions">Supported PHP Versions</a></li>
     <li><a href="#supported-operating-systems">Supported Operating Systems</a></li>
+    <li><a href="#unsupported-tooling">Unsupported Tooling</a></li>
     <li><a href="#hello-world-skeleton">Hello World Skeleton</a>
       <ul>
         <li><a href="#php-function">PHP function:</a></li>
@@ -192,26 +208,30 @@ I have chosen to make the API close to the C API for the first release so anyone
       
       
   <article class="markdown book-article"><p>SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.</p>
-<p>I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.</p>
+<p>I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C based PHP extensions easier.</p>
 <p>Why not &ldquo;X-language&rdquo;? Well, PHP&rsquo;s C-API is mostly C-Macros which is not possible to replicate in any other language other than C++.</p>
 <ul>
-<li><strong>Zig</strong> - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API</li>
+<li><strong>Zig</strong> - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API, so I&rsquo;ve put a pin into this for now.</li>
 <li><strong>Rust</strong> - Someone already did this work in Rust <a href="https://github.com/davidcole1340/ext-php-rs">https://github.com/davidcole1340/ext-php-rs</a></li>
 </ul>
 <h2 id="supported-php-versions">Supported PHP Versions<a class="anchor" href="#supported-php-versions">#</a></h2>
 <ul>
 <li>PHP 8.2 (Unsupported)</li>
 <li>PHP 8.3 (Unsupported)</li>
-<li>PHP 8.4 Thread-safe (ZTS)</li>
-<li>PHP 8.5 (Pending)</li>
+<li>PHP 8.4</li>
+<li>PHP 8.5 (Pending) - Waiting on ARM64 Fixes before testing</li>
 </ul>
 <h2 id="supported-operating-systems">Supported Operating Systems<a class="anchor" href="#supported-operating-systems">#</a></h2>
 <ul>
 <li>MacOS ARM64</li>
-<li>Windows 11 x64 (Pending)</li>
-<li>Windows 11 ARM64 (Work in Progress)</li>
+<li>Windows 11 x64 (Work In Progess)</li>
+<li>Windows 11 ARM64 (Done)</li>
 <li>Linux x64 (Pending)</li>
 <li>Linux ARM64 (Pending)</li>
+</ul>
+<h2 id="unsupported-tooling">Unsupported Tooling<a class="anchor" href="#unsupported-tooling">#</a></h2>
+<ul>
+<li>PHPize</li>
 </ul>
 <h2 id="hello-world-skeleton">Hello World Skeleton<a class="anchor" href="#hello-world-skeleton">#</a></h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Compile extension</span>
@@ -484,6 +504,7 @@ I have chosen to make the API close to the C API for the first release so anyone
   <ul>
     <li><a href="#supported-php-versions">Supported PHP Versions</a></li>
     <li><a href="#supported-operating-systems">Supported Operating Systems</a></li>
+    <li><a href="#unsupported-tooling">Unsupported Tooling</a></li>
     <li><a href="#hello-world-skeleton">Hello World Skeleton</a>
       <ul>
         <li><a href="#php-function">PHP function:</a></li>

@@ -18,7 +18,8 @@ path = 'hugo-book'
 [outputs]
 home = [ "HTML", "RSS", "JSON" ]
 
-# hugo.toml
+[markup.goldmark.extensions]
+  math = true
 
 [[menu.main]]
   name = "Guides"

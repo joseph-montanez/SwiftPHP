@@ -31,11 +31,16 @@ As of this time, the current Windows SDK is broken and you need to follow the gu
 
 PHP has no official support for Windows 11 on ARM, however progress is being made and you can use the guide below.
 
-1. Download the experimental builds for PHP 8.4: https://github.com/hyh19962008/php-windows-arm64/releases/tag/8.4.10. Source code and Binary
+1. Download the experimental builds for PHP 8.4: https://github.com/hyh19962008/php-windows-arm64/releases/download/8.4.10/php-8.4.10-nts-Win32-vs17-arm64-experimental.7z. Source code and SDK are in the same 7zip file.
 
  - php-8.4.10-nts-Win32-vs17-arm64-experimental.7z
- - Source code (zip)
 
-2. Copy `php-src-php-8.4.10\win32\build\config.w32.h.in` to `php-src-php-8.4.10\php\config.w32.h`
+2. Edit `Scripts/win_ext.ps1` and change `$env:PHP_SRC_ROOT="D:/dev/php-src-php-8.4.10"` to where the PHP source code was unzipped to.
 
-3. Edit `Scripts\win_ext.ps1` and change `$env:PHP_SRC_ROOT="D:/dev/php-src-php-8.4.10"` to where the PHP source code was unzipped to.
+```powershell
+# Change these to where you decompressed `php-8.4.10-nts-Win32-vs17-arm64-experimental`
+$env:PHP_SRC_ROOT = "D:/dev/php-8.4.10-nts-Win32-vs17-arm64-experimental/SDK/include"
+$env:PHP_LIB_ROOT = "D:/dev/php-8.4.10-nts-Win32-vs17-arm64-experimental/SDK/lib"
+```
+
+3. Run `Scripts/win_ext.ps1` to build your Native PHP extension.

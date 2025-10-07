@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/SwiftPHP/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=SwiftPHP/livereload" data-no-instant defer></script>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Performance#
+Swift offers great performance since its a compiled language with parallel and async features that are type checked. All while having no garbage collection.
+Benchmark Pairwise Distance#
+Pairwise Distance calculates the distance between every unique pair of vectors
+$$d = \sqrt{(x_2 - x_1)^2 &#43; (y_2 - y_1)^2 &#43; (z_2 - z_1)^2}$$
+Result#
+
+  
+      
+          Version
+          Vector Count
+          Pairwise Calculations
+          Execution Time
+          Estimated Time at 50k Vectors
+          Speedup
+      
+  
+  
+      
+          PHP (Baseline)
+          2,000
+          ~2 Million
+          ~1.47 s
+          ~15.3 minutes*
+          1x
+      
+      
+          Swift (Single Core)
+          50,000
+          ~1.25 Billion
+          29.30 s
+          29.30 seconds
+          30.99x faster
+      
+      
+          Swift (Multi-core)
+          50,000
+          ~1.25 Billion
+          7.00 s
+          7.00 seconds
+          133.25x faster
+      
+  
+
+PHP Benchmark Test#
+$numVectors = 50_000;
+
+echo &#34;Generating test data...\n&#34;;
+$vectors = [];
+for ($i = 0; $i &lt; $numVectors; $i&#43;&#43;) {
+    $vectors[] = new \raylib\Vector3(
+        rand(0, 100) / 10.0,
+        rand(0, 100) / 10.0,
+        rand(0, 100) / 10.0
+    );
+}
+echo &#34;Test data generated.\n\n&#34;;
+
+
+
+$smallVectorSet = array_slice($vectors, 0, 2000);
+
+printf(&#34;\n--- Benchmarking Pairwise Distance ---\n&#34;);
+printf(&#34;Running PHP version with %s vectors...\n&#34;, number_format(count($smallVectorSet)));
+$startPhp = microtime(true);
+$phpDistance = php_total_pairwise_distance($smallVectorSet);
+$endPhp = microtime(true);
+$phpTime = $endPhp - $startPhp;
+printf(&#34;PHP Time: %.4f seconds\n&#34;, $phpTime);
+
+
+printf(&#34;\nRunning Swift version with %s vectors...\n&#34;, number_format(count($vectors)));
+$startSwift = microtime(true);
+$swiftDistance = \raylib\total_pairwise_distance($vectors); // Your new namespaced function
+$endSwift = microtime(true);
+$swiftTime = $endSwift - $startSwift;
+printf(&#34;Swift Time: %.4f seconds\n&#34;, $swiftTime);
+
+$speedup = ($phpTime / count($smallVectorSet)**2) / ($swiftTime / count($vectors)**2);
+printf(&#34;\n✅ Swift extension is roughly %.2f times faster on a per-operation basis.\n&#34;, $speedup);Pure PHP Implementation#
+PHP has no built-in threading or parallel features to speed this up.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/SwiftPHP/guides/performance/">
+  <meta property="og:site_name" content="PHP Extensions in Swift">
+  <meta property="og:title" content="Performance">
+  <meta property="og:description" content="Performance# Swift offers great performance since its a compiled language with parallel and async features that are type checked. All while having no garbage collection.
+Benchmark Pairwise Distance# Pairwise Distance calculates the distance between every unique pair of vectors
+$$d = \sqrt{(x_2 - x_1)^2 &#43; (y_2 - y_1)^2 &#43; (z_2 - z_1)^2}$$
+Result# Version Vector Count Pairwise Calculations Execution Time Estimated Time at 50k Vectors Speedup PHP (Baseline) 2,000 ~2 Million ~1.47 s ~15.3 minutes* 1x Swift (Single Core) 50,000 ~1.25 Billion 29.30 s 29.30 seconds 30.99x faster Swift (Multi-core) 50,000 ~1.25 Billion 7.00 s 7.00 seconds 133.25x faster PHP Benchmark Test# $numVectors = 50_000; echo &#34;Generating test data...\n&#34;; $vectors = []; for ($i = 0; $i &lt; $numVectors; $i&#43;&#43;) { $vectors[] = new \raylib\Vector3( rand(0, 100) / 10.0, rand(0, 100) / 10.0, rand(0, 100) / 10.0 ); } echo &#34;Test data generated.\n\n&#34;; $smallVectorSet = array_slice($vectors, 0, 2000); printf(&#34;\n--- Benchmarking Pairwise Distance ---\n&#34;); printf(&#34;Running PHP version with %s vectors...\n&#34;, number_format(count($smallVectorSet))); $startPhp = microtime(true); $phpDistance = php_total_pairwise_distance($smallVectorSet); $endPhp = microtime(true); $phpTime = $endPhp - $startPhp; printf(&#34;PHP Time: %.4f seconds\n&#34;, $phpTime); printf(&#34;\nRunning Swift version with %s vectors...\n&#34;, number_format(count($vectors))); $startSwift = microtime(true); $swiftDistance = \raylib\total_pairwise_distance($vectors); // Your new namespaced function $endSwift = microtime(true); $swiftTime = $endSwift - $startSwift; printf(&#34;Swift Time: %.4f seconds\n&#34;, $swiftTime); $speedup = ($phpTime / count($smallVectorSet)**2) / ($swiftTime / count($vectors)**2); printf(&#34;\n✅ Swift extension is roughly %.2f times faster on a per-operation basis.\n&#34;, $speedup);Pure PHP Implementation# PHP has no built-in threading or parallel features to speed this up.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="guides">
+<title>Performance | PHP Extensions in Swift</title>
+<link rel="icon" href="/SwiftPHP/favicon.png" >
+<link rel="manifest" href="/SwiftPHP/manifest.json">
+<link rel="canonical" href="http://localhost:1313/SwiftPHP/guides/performance/">
+<link rel="stylesheet" href="/SwiftPHP/book.min.d124d6c76b11546b04023ef152f0ca77dd5bfd00e1638c75250d60e274cdc189.css" integrity="sha256-0STWx2sRVGsEAj7xUvDKd91b/QDhY4x1JQ1g4nTNwYk=" crossorigin="anonymous">
+
+
+  <script defer src="/SwiftPHP/fuse.min.js"></script>
+  <script defer src="/SwiftPHP/en.search.min.663512c319c973094efefcc283bd069cf1835092106dbe2f930b51226bfd4f74.js" integrity="sha256-ZjUSwxnJcwlO/vzCg70GnPGDUJIQbb4vkwtRImv9T3Q=" crossorigin="anonymous"></script>
+
+     
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+        ]
+    });">
+</script>
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-guides">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/SwiftPHP/"><img src="/SwiftPHP/swiftphp-logo.svg" alt="Logo" /><span>PHP Extensions in Swift</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/" class="">
+      Guides</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/installation/" class="">
+      Installtion Guide</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/performance/" class="active">
+      Performance</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/extension-basics/" class="">
+      PHP Extension Basics</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/SwiftPHP/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>Performance</h3>
+
+  <label for="toc-control">
+    
+    <img src="/SwiftPHP/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#benchmark-pairwise-distance">Benchmark Pairwise Distance</a>
+      <ul>
+        <li><a href="#result">Result</a></li>
+        <li><a href="#php-benchmark-test">PHP Benchmark Test</a></li>
+        <li><a href="#pure-php-implementation">Pure PHP Implementation</a></li>
+        <li><a href="#swiftphp-native-php-extension-implementation">SwiftPHP Native PHP Extension Implementation</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h1 id="performance">Performance<a class="anchor" href="#performance">#</a></h1>
+<p>Swift offers great performance since its a compiled language with parallel and async features that are type checked. All while having no garbage collection.</p>
+<h2 id="benchmark-pairwise-distance">Benchmark Pairwise Distance<a class="anchor" href="#benchmark-pairwise-distance">#</a></h2>
+<p>Pairwise Distance calculates the distance between every unique pair of vectors</p>
+<p>$$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}$$</p>
+<h3 id="result">Result<a class="anchor" href="#result">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Version</th>
+          <th style="text-align: left">Vector Count</th>
+          <th style="text-align: left">Pairwise Calculations</th>
+          <th style="text-align: left">Execution Time</th>
+          <th style="text-align: left">Estimated Time at 50k Vectors</th>
+          <th style="text-align: left">Speedup</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>PHP</strong> (Baseline)</td>
+          <td style="text-align: left">2,000</td>
+          <td style="text-align: left">~2 Million</td>
+          <td style="text-align: left">~1.47 s</td>
+          <td style="text-align: left"><strong>~15.3 minutes</strong>*</td>
+          <td style="text-align: left">1x</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Swift (Single Core)</strong></td>
+          <td style="text-align: left">50,000</td>
+          <td style="text-align: left">~1.25 Billion</td>
+          <td style="text-align: left">29.30 s</td>
+          <td style="text-align: left">29.30 seconds</td>
+          <td style="text-align: left"><strong>30.99x</strong> faster</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Swift (Multi-core)</strong></td>
+          <td style="text-align: left">50,000</td>
+          <td style="text-align: left">~1.25 Billion</td>
+          <td style="text-align: left">7.00 s</td>
+          <td style="text-align: left">7.00 seconds</td>
+          <td style="text-align: left"><strong>133.25x</strong> faster</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="php-benchmark-test">PHP Benchmark Test<a class="anchor" href="#php-benchmark-test">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>$numVectors <span style="color:#f92672">=</span> <span style="color:#ae81ff">50_000</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;Generating test data...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>$vectors <span style="color:#f92672">=</span> [];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> ($i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; $i <span style="color:#f92672">&lt;</span> $numVectors; $i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    $vectors[] <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">\raylib\Vector3</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">rand</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">100</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">10.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">rand</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">100</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">10.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">rand</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">100</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">10.0</span>
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;Test data generated.</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$smallVectorSet <span style="color:#f92672">=</span> <span style="color:#a6e22e">array_slice</span>($vectors, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">--- Benchmarking Pairwise Distance ---</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Running PHP version with %s vectors...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">number_format</span>(<span style="color:#a6e22e">count</span>($smallVectorSet)));
+</span></span><span style="display:flex;"><span>$startPhp <span style="color:#f92672">=</span> <span style="color:#a6e22e">microtime</span>(<span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>$phpDistance <span style="color:#f92672">=</span> <span style="color:#a6e22e">php_total_pairwise_distance</span>($smallVectorSet);
+</span></span><span style="display:flex;"><span>$endPhp <span style="color:#f92672">=</span> <span style="color:#a6e22e">microtime</span>(<span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>$phpTime <span style="color:#f92672">=</span> $endPhp <span style="color:#f92672">-</span> $startPhp;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;PHP Time: %.4f seconds</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, $phpTime);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Running Swift version with %s vectors...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">number_format</span>(<span style="color:#a6e22e">count</span>($vectors)));
+</span></span><span style="display:flex;"><span>$startSwift <span style="color:#f92672">=</span> <span style="color:#a6e22e">microtime</span>(<span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>$swiftDistance <span style="color:#f92672">=</span> <span style="color:#a6e22e">\raylib\total_pairwise_distance</span>($vectors); <span style="color:#75715e">// Your new namespaced function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>$endSwift <span style="color:#f92672">=</span> <span style="color:#a6e22e">microtime</span>(<span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>$swiftTime <span style="color:#f92672">=</span> $endSwift <span style="color:#f92672">-</span> $startSwift;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Swift Time: %.4f seconds</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, $swiftTime);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$speedup <span style="color:#f92672">=</span> ($phpTime <span style="color:#f92672">/</span> <span style="color:#a6e22e">count</span>($smallVectorSet)<span style="color:#f92672">**</span><span style="color:#ae81ff">2</span>) <span style="color:#f92672">/</span> ($swiftTime <span style="color:#f92672">/</span> <span style="color:#a6e22e">count</span>($vectors)<span style="color:#f92672">**</span><span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">✅ Swift extension is roughly %.2f times faster on a per-operation basis.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, $speedup);</span></span></code></pre></div><h3 id="pure-php-implementation">Pure PHP Implementation<a class="anchor" href="#pure-php-implementation">#</a></h3>
+<p>PHP has no built-in threading or parallel features to speed this up.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#e6db74">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> * Calculates the sum of the distances between every unique 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> * pair of vectors in the array. This is an O(n^2) operation.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">php_total_pairwise_distance</span>(<span style="color:#66d9ef">array</span> $vectors)<span style="color:#f92672">:</span> <span style="color:#a6e22e">float</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    $totalDistance <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>;
+</span></span><span style="display:flex;"><span>    $count <span style="color:#f92672">=</span> <span style="color:#a6e22e">count</span>($vectors);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> ($i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; $i <span style="color:#f92672">&lt;</span> $count; $i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> ($j <span style="color:#f92672">=</span> $i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; $j <span style="color:#f92672">&lt;</span> $count; $j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            $dx <span style="color:#f92672">=</span> $vectors[$i]<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">x</span> <span style="color:#f92672">-</span> $vectors[$j]<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">x</span>;
+</span></span><span style="display:flex;"><span>            $dy <span style="color:#f92672">=</span> $vectors[$i]<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">y</span> <span style="color:#f92672">-</span> $vectors[$j]<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">y</span>;
+</span></span><span style="display:flex;"><span>            $dz <span style="color:#f92672">=</span> $vectors[$i]<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">z</span> <span style="color:#f92672">-</span> $vectors[$j]<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">z</span>;
+</span></span><span style="display:flex;"><span>            $totalDistance <span style="color:#f92672">+=</span> <span style="color:#a6e22e">sqrt</span>($dx <span style="color:#f92672">*</span> $dx <span style="color:#f92672">+</span> $dy <span style="color:#f92672">*</span> $dy <span style="color:#f92672">+</span> $dz <span style="color:#f92672">*</span> $dz);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> $totalDistance;
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><h3 id="swiftphp-native-php-extension-implementation">SwiftPHP Native PHP Extension Implementation<a class="anchor" href="#swiftphp-native-php-extension-implementation">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * A simple, thread-safe container to hold a single value.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Why a class?
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * A class is a reference type, so we can pass an instance of it into a concurrent
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Task and have that task modify the original object&#39;s contents.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Why final?
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * `final` tells the compiler that this class will never be subclassed. This is a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * performance optimization, as it allows the compiler to use direct function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * calls (static dispatch) instead of more complex dynamic dispatch.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Why generic (`&lt;T&gt;`)?
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * This makes the box reusable. It can hold any type of value (a Double,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * a String, a custom struct, etc.), not just the Double needed for this specific function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Why `@unchecked Sendable`?
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * `Sendable` is a protocol that marks a type as being safe to share across
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * concurrent threads. Classes are not `Sendable` by default because they represent
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * shared, mutable state, which is a primary source of data races.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * `@unchecked` is a promise to the compiler: &#34;I, the developer, guarantee that
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * I have made this class thread-safe myself.&#34; The compiler will then trust us
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * and allow this object to be passed into a concurrent `Task`.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResultBox</span>&lt;T&gt;: @unchecked Sendable {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// The value being stored. It&#39;s private to ensure all access goes</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// through our thread-safe `get()` and `set()` methods. It&#39;s an optional</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// because it starts with no value.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">var</span> value: T?
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// The locking mechanism. `NSLock` is a basic mutex (mutal exclusion lock).</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// It ensures that only one thread can be executing the code inside the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// locked section at any given time, preventing data races.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">let</span> lock = NSLock()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Safely sets the value from any thread.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">set</span>(<span style="color:#66d9ef">_</span> value: T) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Acquire the lock. If another thread already holds the lock, this</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// line will pause and wait until the lock is released.</span>
+</span></span><span style="display:flex;"><span>        lock.lock()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// `defer` is a powerful Swift feature. The code inside the `defer` block</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// is guaranteed to run at the end of the current scope (i.e., just</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// before the `set` function returns), no matter what happens. This</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// ensures the lock is *always* released, even if an error occurred.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">defer</span> { lock.unlock() }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Now that we have the lock, it&#39;s safe to modify the shared value.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">self</span>.value = value
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Safely retrieves the value from any thread.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">get</span>() -&gt; T? {
+</span></span><span style="display:flex;"><span>        lock.lock()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">defer</span> { lock.unlock() }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>.value
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Calculates the total pairwise distance in parallel.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Why `async`?
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * This marks the function as asynchronous. It can perform long-running, concurrent
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * work without blocking the thread that calls it. The `await` keyword is used
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * to call it, which allows the system to suspend this function and run other
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * code while waiting for the parallel tasks to complete.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">calculateTotalPairwiseDistanceParallel</span>(vectors nativeVectors: [Vector3]) async -&gt; Double {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> count = nativeVectors.count
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// A simple guard to prevent trying to calculate with fewer than 2 vectors.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">guard</span> count <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">else</span> { <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0.0</span> }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Why `ProcessInfo`?</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This dynamically queries the system for the number of active CPU cores.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This makes the code adaptive; it will use 4 cores on a 4-core machine,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// and 16 cores on a 16-core machine, ensuring optimal performance.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> processorCount = ProcessInfo.processInfo.activeProcessorCount
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Why this math for `chunkSize`?</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This is a standard integer math formula to divide a number of items (`count`)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// into a number of groups (`processorCount`), correctly handling any remainders.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// It ensures that all vectors are processed.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> chunkSize = (count <span style="color:#f92672">+</span> processorCount <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> processorCount
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Why `withTaskGroup`?</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This is the primary tool in Swift for dynamic, structured concurrency. It</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// creates a scope where you can spin up multiple child tasks that run in</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// parallel. The `await` on this line ensures the function will not proceed</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// until *all* the tasks added to the `group` have completed.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> await withTaskGroup(of: Double.<span style="color:#66d9ef">self</span>, returning: Double.<span style="color:#66d9ef">self</span>) { group <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This loop creates the work for each core. It doesn&#39;t do the work itself.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> stride(from: <span style="color:#ae81ff">0</span>, to: count, by: chunkSize) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> end = min(i <span style="color:#f92672">+</span> chunkSize, count)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> chunkRange = i..&lt;end
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Why `group.addTask`?</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// This submits a block of code (a closure) to the Swift Concurrency</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// runtime. The runtime will schedule this task to run on a background</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// thread, typically from a cooperative thread pool sized to the</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// number of CPU cores.</span>
+</span></span><span style="display:flex;"><span>            group.addTask {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Why `localTotal`?</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// This is a critical pattern for parallelism. Each thread calculates</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// its own partial sum. This avoids having all threads trying to</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// update a single shared variable, which would require locking</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// and create a massive performance bottleneck (lock contention).</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">var</span> localTotal: Double = <span style="color:#ae81ff">0.0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// This is the actual &#34;heavy lifting.&#34; Each core processes its</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// assigned `chunkRange` of the outer loop. The inner loop remains</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// the same, but the overall work is now split across many cores.</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> i_inner <span style="color:#66d9ef">in</span> chunkRange {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">for</span> j <span style="color:#66d9ef">in</span> (i_inner <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)..&lt;count {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">let</span> dx = nativeVectors[i_inner].x <span style="color:#f92672">-</span> nativeVectors[j].x
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">let</span> dy = nativeVectors[i_inner].y <span style="color:#f92672">-</span> nativeVectors[j].y
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">let</span> dz = nativeVectors[i_inner].z <span style="color:#f92672">-</span> nativeVectors[j].z
+</span></span><span style="display:flex;"><span>                        localTotal <span style="color:#f92672">+=</span> sqrt(dx <span style="color:#f92672">*</span> dx <span style="color:#f92672">+</span> dy <span style="color:#f92672">*</span> dy <span style="color:#f92672">+</span> dz <span style="color:#f92672">*</span> dz)
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Each task finishes and returns its own result to the group.</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> localTotal
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Why `for await`?</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This loop asynchronously waits for the child tasks in the group to</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// complete. As each task finishes and returns its `localTotal`, this</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// loop will receive the value. This is how results are collected.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> finalTotal: Double = <span style="color:#ae81ff">0.0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> await partialResult <span style="color:#66d9ef">in</span> group {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// The summation happens here, safely on the parent task&#39;s thread,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// after the parallel work is done.</span>
+</span></span><span style="display:flex;"><span>            finalTotal <span style="color:#f92672">+=</span> partialResult
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> finalTotal
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Why `@MainActor`?</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// This global constant is marked as belonging to the Main Actor. This is a</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// concurrency safety feature. It ensures that if this (or any other) global</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// state were ever modified, all access would be synchronized through the main</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// thread, preventing data races. For a `let` constant, it&#39;s less critical</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// but is good practice.</span>
+</span></span><span style="display:flex;"><span>@MainActor
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">let</span> arginfo_total_pairwise_distance: [zend_internal_arg_info] = [
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Describes the function itself to PHP&#39;s reflection and error-handling systems.</span>
+</span></span><span style="display:flex;"><span>    ZEND_BEGIN_ARG_INFO_EX(
+</span></span><span style="display:flex;"><span>        name: <span style="color:#e6db74">&#34;total_pairwise_distance&#34;</span>, <span style="color:#75715e">// The function name PHP sees</span>
+</span></span><span style="display:flex;"><span>        return_reference: <span style="color:#66d9ef">false</span>,         <span style="color:#75715e">// The function returns a value, not a reference</span>
+</span></span><span style="display:flex;"><span>        required_num_args: <span style="color:#ae81ff">1</span>             <span style="color:#75715e">// It must be called with at least 1 argument</span>
+</span></span><span style="display:flex;"><span>    ),
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Describes the first argument.</span>
+</span></span><span style="display:flex;"><span>    ZEND_ARG_INFO(
+</span></span><span style="display:flex;"><span>        pass_by_ref: <span style="color:#66d9ef">false</span>,              <span style="color:#75715e">// The argument is passed by value</span>
+</span></span><span style="display:flex;"><span>        name: <span style="color:#e6db74">&#34;vectors&#34;</span>                  <span style="color:#75715e">// The argument name is &#34;vectors&#34;</span>
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Why `@_cdecl`?</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// This attribute exposes the Swift function to the C world. It gives the</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// function a simple, predictable symbol name (&#34;zif_total_pairwise_distance&#34;) in the</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// compiled library file, which is what the PHP engine looks for when loading</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// the extension. &#34;zif&#34; stands for &#34;Zend Internal Function&#34;.</span>
+</span></span><span style="display:flex;"><span>@_cdecl(<span style="color:#e6db74">&#34;zif_total_pairwise_distance&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">zif_total_pairwise_distance</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">_</span> execute_data: UnsafeMutablePointer&lt;zend_execute_data&gt;?,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">_</span> return_value: UnsafeMutablePointer&lt;zval&gt;?
+</span></span><span style="display:flex;"><span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> vectorsParam: UnsafeMutablePointer&lt;zval&gt;? = <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">guard</span> <span style="color:#66d9ef">let</span> return_value = return_value <span style="color:#66d9ef">else</span> { <span style="color:#66d9ef">return</span> }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// --- 1. Standard Parameter Parsing ---</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This block uses the argument parsing API to safely extract the expected</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// array argument from PHP. If the user passes the wrong type or number of</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// arguments, this will fail gracefully and throw an error up to PHP.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">guard</span> <span style="color:#66d9ef">var</span> state = ZEND_PARSE_PARAMETERS_START(min: <span style="color:#ae81ff">1</span>, max: <span style="color:#ae81ff">1</span>, execute_data: execute_data) <span style="color:#66d9ef">else</span> { <span style="color:#66d9ef">return</span> }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> Z_PARAM_ARRAY(state: &amp;state, dest: &amp;vectorsParam)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> ZEND_PARSE_PARAMETERS_END(state: state)
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> { <span style="color:#66d9ef">return</span> }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">guard</span> <span style="color:#66d9ef">let</span> vectorsArrayZval = vectorsParam, <span style="color:#66d9ef">let</span> vector3_ce = V3State.shared.ce <span style="color:#66d9ef">else</span> { <span style="color:#66d9ef">return</span> }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// --- 2. Copy PHP Objects into a Native Swift Array ---</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This is the most important optimization for a parallel function.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Why copy? For two reasons:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1. PERFORMANCE: Accessing data from PHP objects is slow and involves API</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//    calls into the Zend Engine. Copying the raw data into a native Swift</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//    array creates a tight, contiguous, cache-friendly block of memory.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//    This makes the billions of calculations in the parallel loop orders</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//    of magnitude faster.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 2. THREAD SAFETY: PHP&#39;s internal data structures are NOT safe to be</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//    accessed by multiple threads simultaneously. Copying the data creates</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//    a safe, isolated snapshot that our parallel Swift code can work on</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//    without risk of crashing or corrupting the PHP engine.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> nativeVectors: [Vector3] = []
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> vectorHashTable = Z_ARRVAL_P(vectorsArrayZval)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Why `reserveCapacity`?</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// A small performance optimization. It pre-allocates enough memory for the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// entire array at once, avoiding the overhead of resizing the array multiple</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// times as elements are appended.</span>
+</span></span><span style="display:flex;"><span>    nativeVectors.reserveCapacity(Int(zend_hash_num_elements(vectorHashTable)))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// `ZEND_HASH_FOREACH_VAL` is the Swift wrapper for iterating over a PHP array.</span>
+</span></span><span style="display:flex;"><span>    ZEND_HASH_FOREACH_VAL(vectorHashTable) { vectorZval <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// We verify that each item in the array is the correct object type.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">guard</span> Z_TYPE_P(vectorZval) == IS_OBJECT, Z_OBJCE_P(vectorZval) == vector3_ce <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// In a real-world scenario, you might want to throw a PHP warning here.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> intern = fetchObject(Z_OBJ_P(vectorZval))
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This is the fast, 24-byte memory copy.</span>
+</span></span><span style="display:flex;"><span>        nativeVectors.append(intern.pointee.vector3)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// --- 3. The &#34;Async-to-Sync&#34; Bridge ---</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This is the pattern used to call our `async` parallel function from this</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// synchronous C-style function.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> resultBox = ResultBox&lt;Double&gt;()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> semaphore = DispatchSemaphore(value: <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Why `Task`?</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This kicks off the asynchronous work on a background thread pool.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The main thread (the one PHP is on) does not wait here; it continues on.</span>
+</span></span><span style="display:flex;"><span>    Task {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> distance = await calculateTotalPairwiseDistanceParallel(vectors: nativeVectors)
+</span></span><span style="display:flex;"><span>        resultBox.<span style="color:#66d9ef">set</span>(distance)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// `signal()` tells the semaphore that the work is done, &#34;waking up&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// any thread that is waiting on it.</span>
+</span></span><span style="display:flex;"><span>        semaphore.signal()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Why `semaphore.wait()`?</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This is the crucial blocking call. It PAUSES the main PHP thread right here</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// and waits until `semaphore.signal()` is called from the background task.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Without this, the function would return to PHP immediately with a zero</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// result, long before the calculation was finished.</span>
+</span></span><span style="display:flex;"><span>    semaphore.wait()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// --- 4. Return the Final Value to PHP ---</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// We safely retrieve the result from our thread-safe box.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> finalDistance = resultBox.<span style="color:#66d9ef">get</span>() ?? <span style="color:#ae81ff">0.0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// `RETURN_DOUBLE` is a helper/macro that converts the Swift `Double` into</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// a PHP `zval` of type IS_DOUBLE and sets it as the function&#39;s return value.</span>
+</span></span><span style="display:flex;"><span>    RETURN_DOUBLE(return_value, finalDistance)
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+  
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/SwiftPHP/guides/installation/" class="flex align-center">
+        <img src="/SwiftPHP/icons/backward.svg" class="book-icon" alt="Previous" title="Installtion Guide" />
+        <span>Installtion Guide</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/SwiftPHP/guides/extension-basics/" class="flex align-center">
+        <span>PHP Extension Basics</span>
+        <img src="/SwiftPHP/icons/forward.svg" class="book-icon" alt="Next" title="PHP Extension Basics" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+        
+        
+
+ 
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#benchmark-pairwise-distance">Benchmark Pairwise Distance</a>
+      <ul>
+        <li><a href="#result">Result</a></li>
+        <li><a href="#php-benchmark-test">PHP Benchmark Test</a></li>
+        <li><a href="#pure-php-implementation">Pure PHP Implementation</a></li>
+        <li><a href="#swiftphp-native-php-extension-implementation">SwiftPHP Native PHP Extension Implementation</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

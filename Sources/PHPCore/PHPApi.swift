@@ -461,6 +461,135 @@ public func Z_PARAM_DOUBLE_OR_NULL(
     }
 }
 
+// MARK: - Array and Object Parsing
+
+public func Z_PARAM_ARRAY_EX(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>,
+    checkNull: Bool,
+    allowObjects: Bool, // The key difference between the C macros
+    deref: Bool,
+    separate: Bool
+) -> Bool {
+    Z_PARAM_PROLOGUE(state: &state, deref: deref, separate: separate)
+
+    // If we're parsing an optional argument that wasn't provided, we're done.
+    if state.i > state.numArgs {
+        return true
+    }
+
+    if !zend_parse_arg_array(state.arg, dest, checkNull, allowObjects) {
+        state.expectedType = checkNull ? Z_EXPECTED_ARRAY_OR_NULL : Z_EXPECTED_ARRAY
+        state.errorCode = ZPP_ERROR_WRONG_ARG
+        return false
+    }
+
+    return true
+}
+
+
+public func Z_PARAM_ARRAY(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>
+) throws {
+    // Corresponds to Z_PARAM_ARRAY_EX(dest, 0, 0) -> Z_PARAM_ARRAY_EX2(dest, 0, 0, 0)
+    let success = Z_PARAM_ARRAY_EX(
+        state: &state,
+        dest: dest,
+        checkNull: false,
+        allowObjects: false,
+        deref: false,
+        separate: false
+    )
+
+    if !success {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+/**
+ * Corresponds to: `#define Z_PARAM_ARRAY_OR_NULL(dest)`
+ * Parses an **optional** PHP array (can be `null`).
+ */
+public func Z_PARAM_ARRAY_OR_NULL(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>
+) throws {
+    // Corresponds to Z_PARAM_ARRAY_EX(dest, 1, 0) -> Z_PARAM_ARRAY_EX2(dest, 1, 0, 0)
+    let success = Z_PARAM_ARRAY_EX(
+        state: &state,
+        dest: dest,
+        checkNull: true,
+        allowObjects: false,
+        deref: false,
+        separate: false
+    )
+    
+    if !success {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+public func Z_PARAM_ARRAY_OR_OBJECT(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>
+) throws {
+    // Corresponds to Z_PARAM_ARRAY_OR_OBJECT_EX(dest, 0, 0) -> Z_PARAM_ARRAY_OR_OBJECT_EX2(dest, 0, 0, 0)
+    let success = Z_PARAM_ARRAY_EX(
+        state: &state,
+        dest: dest,
+        checkNull: false,
+        allowObjects: true,
+        deref: false,
+        separate: false
+    )
+
+    if !success {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+// MARK: - Iterable Parsing
+
+public func Z_PARAM_ITERABLE_EX(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>,
+    checkNull: Bool
+) -> Bool {
+    // The macro uses Z_PARAM_PROLOGUE(0, 0), so deref and separate are false.
+    Z_PARAM_PROLOGUE(state: &state, deref: false, separate: false)
+
+    if state.i > state.numArgs {
+        return true
+    }
+
+    if !zend_parse_arg_iterable(state.arg, dest, checkNull) {
+        state.expectedType = checkNull ? Z_EXPECTED_ITERABLE_OR_NULL : Z_EXPECTED_ITERABLE
+        state.errorCode = ZPP_ERROR_WRONG_ARG
+        return false
+    }
+    
+    return true
+}
+
+public func Z_PARAM_ITERABLE(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>
+) throws {
+    if !Z_PARAM_ITERABLE_EX(state: &state, dest: dest, checkNull: false) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+public func Z_PARAM_ITERABLE_OR_NULL(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>
+) throws {
+    if !Z_PARAM_ITERABLE_EX(state: &state, dest: dest, checkNull: true) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
 public func ZEND_PARSE_PARAMETERS_END(state: ParseState) throws {
     assert(state.i == state.maxNumArgs || state.maxNumArgs == UInt32.max)
 

@@ -127,9 +127,35 @@ public struct FunctionListBuilder {
 
     public init() {}
 
+    // Original method for non-namespaced functions
     @discardableResult
-    public mutating func add(name: String, handler: ZifHandler?, arg_info: [zend_internal_arg_info]?) -> Self {
-        let entry = ZEND_FE(name: name, handler: handler, arg_info: arg_info)
+    public mutating func add(
+        name: String, 
+        handler: ZifHandler?, 
+        arg_info: [zend_internal_arg_info]?
+    ) -> Self {
+        // Assuming you have a ZEND_FENTRY or similar helper
+        let entry = ZEND_FENTRY(zend_name: name, handler: handler, arg_info: arg_info, flags: 0)
+        functions.append(entry)
+        return self
+    }
+
+    // ✅ NEW: Overloaded method for namespaced functions
+    @discardableResult
+    public mutating func add(
+        namespace: String, 
+        name: String, 
+        handler: ZifHandler?, 
+        arg_info: [zend_internal_arg_info]?
+    ) -> Self {
+        // This method calls your new helper function
+        let entry = ZEND_NS_FENTRY(
+            ns: namespace, 
+            zend_name: name, 
+            handler: handler, 
+            arg_info: arg_info, 
+            flags: 0
+        )
         functions.append(entry)
         return self
     }
@@ -139,7 +165,6 @@ public struct FunctionListBuilder {
         finalList.append(ZEND_FE_END())
 
         let pointer = UnsafeMutablePointer<zend_function_entry>.allocate(capacity: finalList.count)
-        
         pointer.initialize(from: finalList, count: finalList.count)
         
         return pointer

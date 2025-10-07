@@ -26,21 +26,20 @@ public struct php_raylib_vector3_object {
     let base = UnsafeMutableRawPointer(obj!).advanced(by: -offset)
     return base.assumingMemoryBound(to: php_raylib_vector3_object.self)
 }
-@inline(__always)
-func fetchVector3Object(_ obj: UnsafeMutablePointer<zend_object>) -> UnsafeMutablePointer<php_raylib_vector3_object> {
-    let offset = Int(V3State.shared.handlersPtr.pointee.offset)
-    return UnsafeMutableRawPointer(obj).advanced(by: -offset).assumingMemoryBound(to: php_raylib_vector3_object.self)
-}
 
+//-- PHP Class Properties are separated by its type and then readers and writers
+// Since this object only has floats as its properties, it only needs float reader and writer.
 public typealias raylib_vector3_read_float_t = @convention(c) (_ obj: UnsafeMutableRawPointer?, _ retval: UnsafeMutableRawPointer?) -> CInt
 public typealias raylib_vector3_write_float_t = @convention(c) (_ obj: UnsafeMutableRawPointer?, _ value: UnsafeMutableRawPointer?) -> CInt
 
+// We then wrap all the readers and writers into handler that the object will hold onto for quick lookup.
 @frozen
 public struct raylib_vector3_prop_handler {
     public var read_float_func: raylib_vector3_read_float_t?
     public var write_float_func: raylib_vector3_write_float_t?
 }
 
+//-- The object's PHP state then is wrapped in a class to bypass concurrency compiler issue.
 final class V3State: @unchecked Sendable {
     static let shared = V3State()
     let handlersPtr: UnsafeMutablePointer<zend_object_handlers>
@@ -55,6 +54,8 @@ final class V3State: @unchecked Sendable {
     }
 }
 
+//-- The reader property function will filter between the types of the properties and then call the correct reader for each type.
+// since this class only has one type, there is no need for a check and just calls the float reader
 public func php_raylib_vector3_property_reader(_ obj: UnsafeMutablePointer<php_raylib_vector3_object>?, _ hnd: UnsafePointer<raylib_vector3_prop_handler>?, _ rv: UnsafeMutablePointer<zval>?) -> UnsafeMutablePointer<zval>? {
     guard let hnd = hnd, let fn = hnd.pointee.read_float_func else { return rv }
     _ = fn(UnsafeMutableRawPointer(obj), UnsafeMutableRawPointer(rv))
@@ -119,6 +120,7 @@ public func php_raylib_vector3_has_property(_ object: UnsafeMutablePointer<zend_
 public func php_raylib_vector3_get_gc(_ object: UnsafeMutablePointer<zend_object>?, _ gc_data: UnsafeMutablePointer<UnsafeMutablePointer<zval>?>?, _ gc_data_count: UnsafeMutablePointer<CInt>?) -> UnsafeMutablePointer<HashTable>? {
     gc_data?.pointee = nil; gc_data_count?.pointee = 0; return zend_std_get_properties(object)
 }
+
 
 @_cdecl("php_raylib_vector3_get_properties")
 public func php_raylib_vector3_get_properties(_ object: UnsafeMutablePointer<zend_object>?) -> UnsafeMutablePointer<HashTable>? {
@@ -221,13 +223,180 @@ public func php_raylib_vector3_clone(_ old_object: UnsafeMutablePointer<zend_obj
     return new_object
 }
 
-// @preconcurrency
-// let arginfo_vector3__construct = [
-//     ZEND_BEGIN_ARG_INFO_EX(name: "__construct", return_reference: false, required_num_args: 0),
-//     ZEND_ARG_TYPE_MASK(passByRef: false, name: "x", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-//     ZEND_ARG_TYPE_MASK(passByRef: false, name: "y", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-//     ZEND_ARG_TYPE_MASK(passByRef: false, name: "z", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-// ]
+@preconcurrency
+let arginfo_vector3__construct = [
+    ZEND_BEGIN_ARG_INFO_EX(name: "__construct", return_reference: false, required_num_args: 0),
+    ZEND_ARG_TYPE_MASK(passByRef: false, name: "x", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+    ZEND_ARG_TYPE_MASK(passByRef: false, name: "y", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+    ZEND_ARG_TYPE_MASK(passByRef: false, name: "z", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
+]
+
+@MainActor
+public let arginfo_vector3_sum: [zend_internal_arg_info] = [
+    ZEND_BEGIN_ARG_INFO_EX(name: "vector3_sum", return_reference: false, required_num_args: 1),
+    ZEND_ARG_INFO(pass_by_ref: false, name: "vectors")
+]
+@_cdecl("zif_vector3_sum")
+public func zif_arginfo_vector3_sum(
+    _ execute_data: UnsafeMutablePointer<zend_execute_data>?, 
+    _ return_value: UnsafeMutablePointer<zval>?
+) {
+    var vectorsParam: UnsafeMutablePointer<zval>? = nil
+
+    guard let return_value = return_value else {
+        return
+    }
+
+    do {
+        guard var state = ZEND_PARSE_PARAMETERS_START(min: 1, max: 1, execute_data: execute_data) else { return }
+        try Z_PARAM_ARRAY(state: &state, dest: &vectorsParam)
+        try ZEND_PARSE_PARAMETERS_END(state: state)
+    } catch { return }
+
+    guard let vectors = vectorsParam else { return }
+
+    let vector_hash = Z_ARRVAL_P(vectors)
+    var total = Vector3(x: 0, y: 0, z: 0)
+
+
+    // Ensure the class entry has been initialised
+    guard let vector3_ce = V3State.shared.ce else {
+        // zend_error(Int32(E_WARNING), "Vector3 class is not initialised")
+        return
+    }
+
+    ZEND_HASH_FOREACH_VAL(vector_hash) { vectorZval in
+        guard Z_TYPE_P(vectorZval) == IS_OBJECT else {
+            // zend_error(Int32(E_WARNING), "An element in the array is not an object")
+            return // Skip non-object elements
+        }
+
+        guard Z_OBJCE_P(vectorZval) == vector3_ce else {
+            // zend_error(Int32(E_WARNING), "An object in the array is not of type raylib\\Vector3")
+            return // Skip elements that are not Vector3 objects
+        }
+
+        let obj = Z_OBJ_P(vectorZval)
+        let intern = fetchObject(obj)
+
+        total.x += intern.pointee.vector3.x
+        total.y += intern.pointee.vector3.y
+        total.z += intern.pointee.vector3.z
+    }
+
+    var resultObj = zval()
+    _ = object_init_ex(&resultObj, vector3_ce)
+    let resultIntern: UnsafeMutablePointer<php_raylib_vector3_object> = fetchObject(Z_OBJ_P(&resultObj))
+    resultIntern.pointee.vector3 = total
+    
+    RETURN_OBJ(return_value, Z_OBJ_P(&resultObj))
+}
+
+final class ResultBox<T>: @unchecked Sendable {
+    private var value: T?
+    private let lock = NSLock()
+
+    func set(_ value: T) {
+        lock.lock()
+        defer { lock.unlock() }
+        self.value = value
+    }
+
+    func get() -> T? {
+        lock.lock()
+        defer { lock.unlock() }
+        return self.value
+    }
+}
+
+func calculateTotalPairwiseDistanceParallel(vectors nativeVectors: [Vector3]) async -> Double {
+    let count = nativeVectors.count
+    guard count >= 2 else { return 0.0 }
+
+    // let processorCount = ProcessInfo.processInfo.activeProcessorCount
+    let processorCount = 1
+    let chunkSize = (count + processorCount - 1) / processorCount
+
+    return await withTaskGroup(of: Double.self, returning: Double.self) { group in
+
+        for i in stride(from: 0, to: count, by: chunkSize) {
+            let end = min(i + chunkSize, count)
+            let chunkRange = i..<end
+
+            group.addTask {
+                var localTotal: Double = 0.0
+
+                for i_inner in chunkRange {
+                    for j in (i_inner + 1)..<count {
+                        let dx = nativeVectors[i_inner].x - nativeVectors[j].x
+                        let dy = nativeVectors[i_inner].y - nativeVectors[j].y
+                        let dz = nativeVectors[i_inner].z - nativeVectors[j].z
+                        localTotal += sqrt(dx * dx + dy * dy + dz * dz)
+                    }
+                }
+                return localTotal
+            }
+        }
+
+        var finalTotal: Double = 0.0
+        for await partialResult in group {
+            finalTotal += partialResult
+        }
+        return finalTotal
+    }
+}
+
+@MainActor
+public let arginfo_total_pairwise_distance: [zend_internal_arg_info] = [
+    ZEND_BEGIN_ARG_INFO_EX(
+        name: "total_pairwise_distance",
+        return_reference: false, 
+        required_num_args: 1
+    ),
+    ZEND_ARG_INFO(pass_by_ref: false, name: "vectors")
+]
+@_cdecl("zif_total_pairwise_distance")
+public func zif_total_pairwise_distance(
+    _ execute_data: UnsafeMutablePointer<zend_execute_data>?,
+    _ return_value: UnsafeMutablePointer<zval>?
+) {
+    var vectorsParam: UnsafeMutablePointer<zval>? = nil
+    guard let return_value = return_value else { return }
+
+    do {
+        guard var state = ZEND_PARSE_PARAMETERS_START(min: 1, max: 1, execute_data: execute_data) else { return }
+        try Z_PARAM_ARRAY(state: &state, dest: &vectorsParam)
+        try ZEND_PARSE_PARAMETERS_END(state: state)
+    } catch { return }
+
+    guard let vectorsArrayZval = vectorsParam, let vector3_ce = V3State.shared.ce else { return }
+
+    var nativeVectors: [Vector3] = []
+    let vectorHashTable = Z_ARRVAL_P(vectorsArrayZval)
+    nativeVectors.reserveCapacity(Int(zend_hash_num_elements(vectorHashTable)))
+
+    ZEND_HASH_FOREACH_VAL(vectorHashTable) { vectorZval in
+        guard Z_TYPE_P(vectorZval) == IS_OBJECT, Z_OBJCE_P(vectorZval) == vector3_ce else {
+            return
+        }
+        let intern = fetchObject(Z_OBJ_P(vectorZval))
+        nativeVectors.append(intern.pointee.vector3)
+    }
+
+    let resultBox = ResultBox<Double>()
+    let semaphore = DispatchSemaphore(value: 0)
+
+    Task {
+        let distance = await calculateTotalPairwiseDistanceParallel(vectors: nativeVectors)
+        resultBox.set(distance)
+        semaphore.signal()
+    }
+
+    semaphore.wait()
+
+    let finalDistance = resultBox.get() ?? 0.0
+    RETURN_DOUBLE(return_value, finalDistance)
+}
 
 @_cdecl("vector3__construct")
 public func vector3__construct(_ execute_data: UnsafeMutablePointer<zend_execute_data>?, _ _: UnsafeMutablePointer<zval>?) {
@@ -247,13 +416,6 @@ public func vector3__construct(_ execute_data: UnsafeMutablePointer<zend_execute
 }
 
 public func php_raylib_vector3_startup(type: CInt, module_number: CInt) {
-    let arginfo_vector3__construct = [
-        ZEND_BEGIN_ARG_INFO_EX(name: "__construct", return_reference: false, required_num_args: 0),
-        ZEND_ARG_TYPE_MASK(passByRef: false, name: "x", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-        ZEND_ARG_TYPE_MASK(passByRef: false, name: "y", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-        ZEND_ARG_TYPE_MASK(passByRef: false, name: "z", typeMask: UInt32(MAY_BE_DOUBLE|MAY_BE_NULL), defaultValue: "0"),
-    ]
-
     let S = V3State.shared
     var ce = zend_class_entry()
 
@@ -286,4 +448,23 @@ public func php_raylib_vector3_startup(type: CInt, module_number: CInt) {
     "x".withCString { k in php_raylib_vector3_register_prop_handler(S.propHandlersPtr, k, php_raylib_vector3_get_x, php_raylib_vector3_set_x) }
     "y".withCString { k in php_raylib_vector3_register_prop_handler(S.propHandlersPtr, k, php_raylib_vector3_get_y, php_raylib_vector3_set_y) }
     "z".withCString { k in php_raylib_vector3_register_prop_handler(S.propHandlersPtr, k, php_raylib_vector3_get_z, php_raylib_vector3_set_z) }
+}
+
+
+
+@MainActor
+public func vector3_functions_add_entries(builder: inout FunctionListBuilder) {
+    builder.add(
+        namespace: "raylib", 
+        name: "vector3_sum", 
+        handler: zif_arginfo_vector3_sum, 
+        arg_info: arginfo_vector3_sum
+    )
+
+    builder.add(
+        namespace: "raylib",
+        name: "total_pairwise_distance",
+        handler: zif_total_pairwise_distance,
+        arg_info: arginfo_total_pairwise_distance
+    )
 }

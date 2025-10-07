@@ -5,27 +5,31 @@ title = 'Hello Swift'
 
 SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.
 
-I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C extensions easier.
+I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C based PHP extensions easier.
 
 Why not "X-language"? Well, PHP's C-API is mostly C-Macros which is not possible to replicate in any other language other than C++. 
 
- - **Zig** - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API
+ - **Zig** - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API, so I've put a pin into this for now.
  - **Rust** - Someone already did this work in Rust https://github.com/davidcole1340/ext-php-rs
 
 ## Supported PHP Versions
 
  - PHP 8.2 (Unsupported)
  - PHP 8.3 (Unsupported)
- - PHP 8.4 Thread-safe (ZTS)
- - PHP 8.5 (Pending)
+ - PHP 8.4
+ - PHP 8.5 (Pending) - Waiting on ARM64 Fixes before testing
 
 ## Supported Operating Systems
 
  - MacOS ARM64
- - Windows 11 x64 (Pending)
- - Windows 11 ARM64 (Work in Progress)
+ - Windows 11 x64 (Work In Progess)
+ - Windows 11 ARM64 (Done)
  - Linux x64 (Pending)
  - Linux ARM64 (Pending)
+
+## Unsupported Tooling
+
+ - PHPize
 
 ## Hello World Skeleton
 
