@@ -4,7 +4,7 @@ func ZEND_TOSTR(_ x: Int) -> String {
     return "\(x)"
 }
 
-#if ZTS
+#if ZTS_SWIFT
 public let ZEND_BUILD_TS = ",TS"
 #else
 public let ZEND_BUILD_TS = ",NTS"
@@ -25,7 +25,11 @@ public var ZEND_BUILD_SYSTEM: String {
     }
 }
 #else
+#if os(Windows)
+public let ZEND_BUILD_SYSTEM = ",VS17"
+#else
 public let ZEND_BUILD_SYSTEM = ""
+#endif
 #endif
 
 

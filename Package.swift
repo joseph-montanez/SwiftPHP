@@ -28,7 +28,11 @@ var targets: [Target] = [
             .define("WIN32",      .when(platforms: [.windows])),
             .define("_WIN32",     .when(platforms: [.windows])),
             .define("_WINDOWS",   .when(platforms: [.windows])),
-            .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
+            .define("ZEND_DEBUG",   .when(platforms: [.windows])),
+            // .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
+            // .define("ZTS", to: "0", .when(platforms: [.windows])), 
+            .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
+            .define("NTS_SWIFT", .when(platforms: [.windows])),
             // .unsafeFlags([
             //     "-I", phpSrc,
             //     "-I", "\(phpSrc)/main",
@@ -39,7 +43,8 @@ var targets: [Target] = [
             // ], .when(platforms: [.windows])),
         ],
         swiftSettings: [
-            .define("ZTS", .when(platforms: [.macOS, .iOS])),
+            .define("ZTS_SWIFT",  .when(platforms: [.macOS, .iOS])),
+            .define("NTS_SWIFT",  .when(platforms: [.windows])),
             .unsafeFlags([
                 "-Xcc","-I","-Xcc","PHP.xcframework/macos-arm64/Headers",
                 "-Xcc","-I","-Xcc","PHP.xcframework/macos-arm64/Headers/main",
@@ -92,7 +97,11 @@ var targets: [Target] = [
             .define("WIN32",      .when(platforms: [.windows])),
             .define("_WIN32",     .when(platforms: [.windows])),
             .define("_WINDOWS",   .when(platforms: [.windows])),
+            .define("ZEND_DEBUG",   .when(platforms: [.windows])),
             // .define("ZTS", to: "0", .when(platforms: [.windows])), 
+            // .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])), 
+            .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
+            .define("NTS_SWIFT", .when(platforms: [.windows])),
             .unsafeFlags([
                 "-I", phpSrc,
                 "-I", "\(phpSrc)/main",
@@ -103,6 +112,8 @@ var targets: [Target] = [
             ], .when(platforms: [.windows])),
         ],
         swiftSettings: [
+            .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
+            .define("NTS_SWIFT", .when(platforms: [.windows])),
             .unsafeFlags([
                 "-Xcc","-I","-Xcc","\(phpSrc)",
                 "-Xcc","-I","-Xcc","\(phpSrc)/main",
@@ -135,7 +146,11 @@ var targets: [Target] = [
             .define("_WINDOWS",   .when(platforms: [.windows])),
             .define("ZTS",        .when(platforms: [.macOS, .iOS])),
             .define("ZEND_DEBUG", .when(platforms: [.macOS, .iOS])),
-            .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
+            .define("ZEND_DEBUG",   .when(platforms: [.windows])),
+            // .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
+            // .define("ZTS", to: "0", .when(platforms: [.windows])), 
+            .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
+            .define("NTS_SWIFT", .when(platforms: [.windows])),
             .unsafeFlags([
                 "-I", phpSrc,
                 "-I", "\(phpSrc)/main",
@@ -145,11 +160,15 @@ var targets: [Target] = [
             ], .when(platforms: [.windows])),
         ],
         swiftSettings: [
+            .define("ZTS_SWIFT",  .when(platforms: [.macOS, .iOS])),
+            .define("NTS_SWIFT",  .when(platforms: [.windows])),
             .define("ZEND_WIN32", .when(platforms: [.windows])),
             .define("PHP_WIN32",  .when(platforms: [.windows])),
             .define("WIN32",      .when(platforms: [.windows])),
             .define("ZEND_DEBUG", .when(platforms: [.macOS, .iOS])),
             .define("ZTS", .when(platforms: [.macOS, .iOS])),
+            .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
+            .define("NTS_SWIFT", .when(platforms: [.windows])),
             .unsafeFlags([
                 "-Xcc","-I","-Xcc","PHP.xcframework/macos-arm64/Headers",
                 "-Xcc","-I","-Xcc","PHP.xcframework/macos-arm64/Headers/main",
@@ -167,11 +186,16 @@ var targets: [Target] = [
                 "-Xcc","-I","-Xcc","\(phpSrc)/main",
                 "-Xcc","-I","-Xcc","\(phpSrc)/Zend",
                 "-Xcc","-I","-Xcc","\(phpSrc)/TSRM",
+                // "-static-stdlib"
             ], .when(platforms: [.windows])),
         ],
         linkerSettings: [
             .unsafeFlags(["-Xlinker","-undefined","-Xlinker","dynamic_lookup"], .when(platforms: [.macOS, .iOS])),
-            .unsafeFlags(["-L\(phpLib)", "\(phpLib)/php8.lib"], .when(platforms: [.windows])),
+            .unsafeFlags([
+                // "-L", "C:/Users/Joseph/AppData/Local/Programs/Swift/Platforms/6.2.0/Windows.platform/Developer/SDKs/Windows.sdk/usr/lib/swift/windows/aarch64",
+                "-L\(phpLib)", "\(phpLib)/php8.lib",
+                // "C:/Users/Joseph/AppData/Local/Programs/Swift/Platforms/6.2.0/Windows.platform/Developer/SDKs/Windows.sdk/usr/lib/swift/windows/aarch64/swiftCore.lib"
+            ], .when(platforms: [.windows])),
         ]
     ),
 ]

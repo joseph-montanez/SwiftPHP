@@ -1,24 +1,3 @@
-#ifndef ZEND_WIN32
-# define ZEND_WIN32 1
-#endif
-#ifndef PHP_WIN32
-# define PHP_WIN32 1
-#endif
-#ifndef _WIN32
-# define _WIN32 1
-#endif
-#ifndef WIN32
-# define WIN32 1
-#endif
-#ifndef _WINDOWS
-# define _WINDOWS 1
-#endif
-// #ifndef ZTS
-// # define ZTS 1
-// #endif
-#ifndef ZEND_DEBUG
-# define ZEND_DEBUG 0
-#endif
 
 // #include "main/php.h"
 // #include "Zend/zend.h"
@@ -156,7 +135,7 @@ zend_module_entry* create_module_entry(
     int (*request_shutdown_func)(SHUTDOWN_FUNC_ARGS),
     void (*info_func)(ZEND_MODULE_INFO_FUNC_ARGS),
     size_t globals_size,
-    #ifdef ZTS
+    #if defined(ZTS) && ZTS
     ts_rsrc_id* globals_id_ptr,
     #endif
     void (*globals_ctor)(void* global_ctor_arg),
@@ -170,7 +149,7 @@ zend_module_entry* create_module_entry(
 
     entry->size = sizeof(zend_module_entry);
     entry->zend_api = ZEND_MODULE_API_NO;
-    #ifdef ZEND_DEBUG
+    #if defined(ZEND_DEBUG) && ZEND_DEBUG
         entry->zend_debug = 1;
     #else
         entry->zend_debug = 0;
@@ -187,9 +166,10 @@ zend_module_entry* create_module_entry(
     entry->info_func = info_func;
     entry->version = version;
     entry->globals_size = globals_size;
-#ifdef ZTS
+#if defined(ZTS) && ZTS
     entry->globals_id_ptr = globals_id_ptr;
-#else
+#endif
+#if !defined(ZTS) || !ZTS
     entry->globals_ptr = NULL;
 #endif
     entry->globals_ctor = globals_ctor;
@@ -205,10 +185,15 @@ zend_module_entry* create_module_entry(
 }
 
 
-#ifndef ZTS
+#if !defined(ZTS) || !ZTS
 zend_executor_globals* get_executor_globals(void) { return &executor_globals; }
 zend_compiler_globals* get_compiler_globals(void) { return &compiler_globals; }
-#else
+#endif
+
+#if defined(ZTS) && ZTS
 size_t get_executor_globals_offset(void) { return executor_globals_offset; }
 size_t get_compiler_globals_offset(void) { return compiler_globals_offset; }
 #endif
+
+
+

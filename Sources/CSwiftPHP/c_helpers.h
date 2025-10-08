@@ -5,6 +5,14 @@
 //#include "sapi/embed/php_embed.h"
 #include "Zend/zend.h"
 
+#ifdef PHP_WIN32
+#include <config.w32.h>
+#else
+#include <php_config.h>
+#endif
+
+
+
 zend_string* swift_zend_string_init(const char *str, size_t len, bool persistent);
 const zend_object_handlers* swift_zend_get_std_object_handlers(void);
 
@@ -29,7 +37,7 @@ zend_module_entry* create_module_entry(
     int (*request_shutdown_func)(SHUTDOWN_FUNC_ARGS),
     void (*info_func)(ZEND_MODULE_INFO_FUNC_ARGS),
     size_t globals_size,
-    #ifdef ZTS
+    #if defined(ZTS) && ZTS
     ts_rsrc_id* globals_id_ptr,
     #endif
     void (*globals_ctor)(void* global_ctor_arg),
@@ -43,16 +51,27 @@ zend_module_entry* create_module_entry(
 // zend_result safe_zend_call_function(zend_fcall_info *fci, zend_fcall_info_cache *fci_cache);
 // bool safe_php_execute_script(zend_file_handle *primary_file);
 
-#ifndef ZTS
+#if !defined(ZTS) || !ZTS
 zend_executor_globals* get_executor_globals();
 zend_compiler_globals* get_compiler_globals();
 #endif
 
-#ifdef ZTS
+#if defined(ZTS) && ZTS
 extern size_t compiler_globals_offset;
 extern size_t executor_globals_offset;
 size_t get_compiler_globals_offset();
 size_t get_executor_globals_offset();
+#endif
+
+#ifdef _WIN32
+#pragma comment(linker, "/alternatename:emalloc_16=emalloc")
+#pragma comment(linker, "/alternatename:emalloc_32=emalloc")
+#pragma comment(linker, "/alternatename:efree_16=efree")
+#pragma comment(linker, "/alternatename:efree_32=efree")
+#pragma comment(linker, "/alternatename:_emalloc_16=emalloc")
+#pragma comment(linker, "/alternatename:_emalloc_32=emalloc")
+#pragma comment(linker, "/alternatename:_efree_16=efree")
+#pragma comment(linker, "/alternatename:_efree_32=efree")
 #endif
 
 #endif

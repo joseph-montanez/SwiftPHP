@@ -47,8 +47,6 @@ for ($i = 0; $i < $numVectors; $i++) {
 }
 echo "Test data generated.\n\n";
 
-
-
 $smallVectorSet = array_slice($vectors, 0, 2000);
 
 printf("\n--- Benchmarking Pairwise Distance ---\n");
@@ -58,7 +56,6 @@ $phpDistance = php_total_pairwise_distance($smallVectorSet);
 $endPhp = microtime(true);
 $phpTime = $endPhp - $startPhp;
 printf("PHP Time: %.4f seconds\n", $phpTime);
-
 
 printf("\nRunning Swift version with %s vectors...\n", number_format(count($vectors)));
 $startSwift = microtime(true);

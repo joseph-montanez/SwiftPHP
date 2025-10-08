@@ -18,37 +18,68 @@ Result#
   
       
           Version
+          Processor / OS
           Vector Count
           Pairwise Calculations
           Execution Time
-          Estimated Time at 50k Vectors
-          Speedup
+          Estimated Time at 50 k Vectors
+          Speedup vs PHP
       
   
   
       
           PHP (Baseline)
-          2,000
-          ~2 Million
+          Apple M4 Mac mini (macOS 15)
+          2 000
+          ~2 million
           ~1.47 s
-          ~15.3 minutes*
-          1x
+          ~15.3 minutes
+          1×
       
       
           Swift (Single Core)
-          50,000
-          ~1.25 Billion
+          Apple M4 Mac mini (macOS 15)
+          50 000
+          ~1.25 billion
           29.30 s
-          29.30 seconds
-          30.99x faster
+          29.30 s
+          30.99×
       
       
-          Swift (Multi-core)
-          50,000
-          ~1.25 Billion
+          Swift (Multi-Core)
+          Apple M4 Mac mini (macOS 15)
+          50 000
+          ~1.25 billion
           7.00 s
-          7.00 seconds
-          133.25x faster
+          7.00 s
+          133.25×
+      
+      
+          PHP (Baseline)
+          Snapdragon X1P42100 (Windows 11)
+          2 000
+          ~2 million
+          1.2340 s
+          ~12.9 minutes
+          1×
+      
+      
+          Swift (Single Core)
+          Snapdragon X1P42100 (Windows 11)
+          50 000
+          ~1.25 billion
+          11.0950 s
+          11.0950 s
+          ~68.35×
+      
+      
+          Swift (Multi-Core)
+          Snapdragon X1P42100 (Windows 11)
+          50 000
+          ~1.25 billion
+          3.0551 s
+          3.0551 s
+          ~252.45×
       
   
 
@@ -97,7 +128,7 @@ PHP has no built-in threading or parallel features to speed this up.">
   <meta property="og:description" content="Performance# Swift offers great performance since its a compiled language with parallel and async features that are type checked. All while having no garbage collection.
 Benchmark Pairwise Distance# Pairwise Distance calculates the distance between every unique pair of vectors
 $$d = \sqrt{(x_2 - x_1)^2 &#43; (y_2 - y_1)^2 &#43; (z_2 - z_1)^2}$$
-Result# Version Vector Count Pairwise Calculations Execution Time Estimated Time at 50k Vectors Speedup PHP (Baseline) 2,000 ~2 Million ~1.47 s ~15.3 minutes* 1x Swift (Single Core) 50,000 ~1.25 Billion 29.30 s 29.30 seconds 30.99x faster Swift (Multi-core) 50,000 ~1.25 Billion 7.00 s 7.00 seconds 133.25x faster PHP Benchmark Test# $numVectors = 50_000; echo &#34;Generating test data...\n&#34;; $vectors = []; for ($i = 0; $i &lt; $numVectors; $i&#43;&#43;) { $vectors[] = new \raylib\Vector3( rand(0, 100) / 10.0, rand(0, 100) / 10.0, rand(0, 100) / 10.0 ); } echo &#34;Test data generated.\n\n&#34;; $smallVectorSet = array_slice($vectors, 0, 2000); printf(&#34;\n--- Benchmarking Pairwise Distance ---\n&#34;); printf(&#34;Running PHP version with %s vectors...\n&#34;, number_format(count($smallVectorSet))); $startPhp = microtime(true); $phpDistance = php_total_pairwise_distance($smallVectorSet); $endPhp = microtime(true); $phpTime = $endPhp - $startPhp; printf(&#34;PHP Time: %.4f seconds\n&#34;, $phpTime); printf(&#34;\nRunning Swift version with %s vectors...\n&#34;, number_format(count($vectors))); $startSwift = microtime(true); $swiftDistance = \raylib\total_pairwise_distance($vectors); // Your new namespaced function $endSwift = microtime(true); $swiftTime = $endSwift - $startSwift; printf(&#34;Swift Time: %.4f seconds\n&#34;, $swiftTime); $speedup = ($phpTime / count($smallVectorSet)**2) / ($swiftTime / count($vectors)**2); printf(&#34;\n✅ Swift extension is roughly %.2f times faster on a per-operation basis.\n&#34;, $speedup);Pure PHP Implementation# PHP has no built-in threading or parallel features to speed this up.">
+Result# Version Processor / OS Vector Count Pairwise Calculations Execution Time Estimated Time at 50 k Vectors Speedup vs PHP PHP (Baseline) Apple M4 Mac mini (macOS 15) 2 000 ~2 million ~1.47 s ~15.3 minutes 1× Swift (Single Core) Apple M4 Mac mini (macOS 15) 50 000 ~1.25 billion 29.30 s 29.30 s 30.99× Swift (Multi-Core) Apple M4 Mac mini (macOS 15) 50 000 ~1.25 billion 7.00 s 7.00 s 133.25× PHP (Baseline) Snapdragon X1P42100 (Windows 11) 2 000 ~2 million 1.2340 s ~12.9 minutes 1× Swift (Single Core) Snapdragon X1P42100 (Windows 11) 50 000 ~1.25 billion 11.0950 s 11.0950 s ~68.35× Swift (Multi-Core) Snapdragon X1P42100 (Windows 11) 50 000 ~1.25 billion 3.0551 s 3.0551 s ~252.45× PHP Benchmark Test# $numVectors = 50_000; echo &#34;Generating test data...\n&#34;; $vectors = []; for ($i = 0; $i &lt; $numVectors; $i&#43;&#43;) { $vectors[] = new \raylib\Vector3( rand(0, 100) / 10.0, rand(0, 100) / 10.0, rand(0, 100) / 10.0 ); } echo &#34;Test data generated.\n\n&#34;; $smallVectorSet = array_slice($vectors, 0, 2000); printf(&#34;\n--- Benchmarking Pairwise Distance ---\n&#34;); printf(&#34;Running PHP version with %s vectors...\n&#34;, number_format(count($smallVectorSet))); $startPhp = microtime(true); $phpDistance = php_total_pairwise_distance($smallVectorSet); $endPhp = microtime(true); $phpTime = $endPhp - $startPhp; printf(&#34;PHP Time: %.4f seconds\n&#34;, $phpTime); printf(&#34;\nRunning Swift version with %s vectors...\n&#34;, number_format(count($vectors))); $startSwift = microtime(true); $swiftDistance = \raylib\total_pairwise_distance($vectors); // Your new namespaced function $endSwift = microtime(true); $swiftTime = $endSwift - $startSwift; printf(&#34;Swift Time: %.4f seconds\n&#34;, $swiftTime); $speedup = ($phpTime / count($smallVectorSet)**2) / ($swiftTime / count($vectors)**2); printf(&#34;\n✅ Swift extension is roughly %.2f times faster on a per-operation basis.\n&#34;, $speedup);Pure PHP Implementation# PHP has no built-in threading or parallel features to speed this up.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="guides">
@@ -109,7 +140,7 @@ Result# Version Vector Count Pairwise Calculations Execution Time Estimated Time
 
 
   <script defer src="/SwiftPHP/fuse.min.js"></script>
-  <script defer src="/SwiftPHP/en.search.min.663512c319c973094efefcc283bd069cf1835092106dbe2f930b51226bfd4f74.js" integrity="sha256-ZjUSwxnJcwlO/vzCg70GnPGDUJIQbb4vkwtRImv9T3Q=" crossorigin="anonymous"></script>
+  <script defer src="/SwiftPHP/en.search.min.9df05755cd177b4d633c4bd537a064a18f2e3903f4137b6b786d61162fd78c7e.js" integrity="sha256-nfBXVc0Xe01jPEvVN6BkoY8uOQP0E3treG1hFi/XjH4=" crossorigin="anonymous"></script>
 
      
   
@@ -310,37 +341,68 @@ Result# Version Vector Count Pairwise Calculations Execution Time Estimated Time
   <thead>
       <tr>
           <th style="text-align: left">Version</th>
+          <th style="text-align: left">Processor / OS</th>
           <th style="text-align: left">Vector Count</th>
           <th style="text-align: left">Pairwise Calculations</th>
           <th style="text-align: left">Execution Time</th>
-          <th style="text-align: left">Estimated Time at 50k Vectors</th>
-          <th style="text-align: left">Speedup</th>
+          <th style="text-align: left">Estimated Time at 50 k Vectors</th>
+          <th style="text-align: left">Speedup vs PHP</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td style="text-align: left"><strong>PHP</strong> (Baseline)</td>
-          <td style="text-align: left">2,000</td>
-          <td style="text-align: left">~2 Million</td>
+          <td style="text-align: left"><strong>PHP (Baseline)</strong></td>
+          <td style="text-align: left">Apple M4 Mac mini (macOS 15)</td>
+          <td style="text-align: left">2 000</td>
+          <td style="text-align: left">~2 million</td>
           <td style="text-align: left">~1.47 s</td>
-          <td style="text-align: left"><strong>~15.3 minutes</strong>*</td>
-          <td style="text-align: left">1x</td>
+          <td style="text-align: left"><strong>~15.3 minutes</strong></td>
+          <td style="text-align: left">1×</td>
       </tr>
       <tr>
           <td style="text-align: left"><strong>Swift (Single Core)</strong></td>
-          <td style="text-align: left">50,000</td>
-          <td style="text-align: left">~1.25 Billion</td>
+          <td style="text-align: left">Apple M4 Mac mini (macOS 15)</td>
+          <td style="text-align: left">50 000</td>
+          <td style="text-align: left">~1.25 billion</td>
           <td style="text-align: left">29.30 s</td>
-          <td style="text-align: left">29.30 seconds</td>
-          <td style="text-align: left"><strong>30.99x</strong> faster</td>
+          <td style="text-align: left">29.30 s</td>
+          <td style="text-align: left"><strong>30.99×</strong></td>
       </tr>
       <tr>
-          <td style="text-align: left"><strong>Swift (Multi-core)</strong></td>
-          <td style="text-align: left">50,000</td>
-          <td style="text-align: left">~1.25 Billion</td>
+          <td style="text-align: left"><strong>Swift (Multi-Core)</strong></td>
+          <td style="text-align: left">Apple M4 Mac mini (macOS 15)</td>
+          <td style="text-align: left">50 000</td>
+          <td style="text-align: left">~1.25 billion</td>
           <td style="text-align: left">7.00 s</td>
-          <td style="text-align: left">7.00 seconds</td>
-          <td style="text-align: left"><strong>133.25x</strong> faster</td>
+          <td style="text-align: left">7.00 s</td>
+          <td style="text-align: left"><strong>133.25×</strong></td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>PHP (Baseline)</strong></td>
+          <td style="text-align: left">Snapdragon X1P42100 (Windows 11)</td>
+          <td style="text-align: left">2 000</td>
+          <td style="text-align: left">~2 million</td>
+          <td style="text-align: left">1.2340 s</td>
+          <td style="text-align: left"><strong>~12.9 minutes</strong></td>
+          <td style="text-align: left">1×</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Swift (Single Core)</strong></td>
+          <td style="text-align: left">Snapdragon X1P42100 (Windows 11)</td>
+          <td style="text-align: left">50 000</td>
+          <td style="text-align: left">~1.25 billion</td>
+          <td style="text-align: left">11.0950 s</td>
+          <td style="text-align: left">11.0950 s</td>
+          <td style="text-align: left"><strong>~68.35×</strong></td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Swift (Multi-Core)</strong></td>
+          <td style="text-align: left">Snapdragon X1P42100 (Windows 11)</td>
+          <td style="text-align: left">50 000</td>
+          <td style="text-align: left">~1.25 billion</td>
+          <td style="text-align: left">3.0551 s</td>
+          <td style="text-align: left">3.0551 s</td>
+          <td style="text-align: left"><strong>~252.45×</strong></td>
       </tr>
   </tbody>
 </table>

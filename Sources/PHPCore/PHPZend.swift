@@ -20,7 +20,7 @@ public func EG<T>(_ keyPath: KeyPath<zend_executor_globals, T>) -> T {
 
 
 public func CG<T>(_ keyPath: KeyPath<zend_compiler_globals, T>) -> T {
-    #if ZTS
+    #if ZTS_SWIFT
     let tsrm_ls = tsrm_get_ls_cache()
     guard let tsrm_ls_base = tsrm_ls?.assumingMemoryBound(to: UInt8.self) else {
         fatalError("Failed to get thread-safe resource manager cache.")

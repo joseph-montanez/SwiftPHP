@@ -1,5 +1,40 @@
 import Foundation
 
+@inline(__always)
+private func foreachVals(
+    _ ht: UnsafeMutablePointer<HashTable>,
+    _ body: (_ zv: UnsafeMutablePointer<zval>) -> Void
+) {
+    var pos = HashPosition()
+    zend_hash_internal_pointer_reset_ex(ht, &pos)
+    while true {
+        guard let zv = zend_hash_get_current_data_ex(ht, &pos) else { break }
+        if Z_TYPE_P(zv) != IS_UNDEF {
+            body(zv)
+        }
+        if zend_hash_move_forward_ex(ht, &pos) == FAILURE { break }
+    }
+}
+
+@inline(__always)
+private func foreachStrKeyPtr(
+    _ ht: UnsafeMutablePointer<HashTable>,
+    _ body: (_ key: UnsafeMutablePointer<zend_string>?, _ ptr: UnsafeMutableRawPointer?) -> Void
+) {
+    var pos = HashPosition()
+    zend_hash_internal_pointer_reset_ex(ht, &pos)
+    while true {
+        var keyStr: UnsafeMutablePointer<zend_string>? = nil
+        var index: zend_ulong = 0
+        let keyType = zend_hash_get_current_key_ex(ht, &keyStr, &index, &pos)
+        let zv = zend_hash_get_current_data_ex(ht, &pos)
+        if let zv = zv, Z_TYPE_P(zv) != IS_UNDEF {
+            body((keyType == HASH_KEY_IS_STRING) ? keyStr : nil, Z_PTR_P(zv))
+        }
+        if zend_hash_move_forward_ex(ht, &pos) == FAILURE { break }
+    }
+}
+
 #if !DEBUG && HAVE_BUILTIN_CONSTANT_P
 @inline(__always)
 public func zend_new_array(_ size: UInt32) -> UnsafeMutablePointer<zend_array>! {
@@ -91,11 +126,7 @@ public func ZEND_HASH_FOREACH_VAL(
     _ ht: UnsafeMutablePointer<HashTable>,
     body: (_ val: UnsafeMutablePointer<zval>) -> Void
 ) {
-    ZEND_HASH_FOREACH_FROM(ht: ht, indirect: 0, from: 0) { (_, val, _) in
-        if let val = val {
-            body(val)
-        }
-    }
+    foreachVals(ht, body)
 }
 
 // NOTE: These low-level helpers are highly specific to the C HashTable layout
@@ -164,23 +195,16 @@ public struct PhpZValValIter: Sequence, IteratorProtocol {
 
 // MARK: - Added Swift Conversion
 
-/// The Swift equivalent of the `ZEND_HASH_FOREACH_STR_KEY_PTR` C macro.
-/// Iterates over a HashTable, providing the string key and a raw pointer from the zval's value.
 public func ZEND_HASH_FOREACH_STR_KEY_PTR(
     _ ht: UnsafeMutablePointer<HashTable>,
     body: (_ key: UnsafeMutablePointer<zend_string>?, _ ptr: UnsafeMutableRawPointer?) -> Void
 ) {
-    // This function builds upon your existing ZEND_HASH_FOREACH_FROM iterator.
-    // The `indirect` flag is 0, as specified in the ZEND_HASH_FOREACH macro it uses.
-    ZEND_HASH_FOREACH_FROM(ht: ht, indirect: 0, from: 0) { (key, val, _) in
-        if let zval = val {
-            // Equivalent of the C macro Z_PTR_P()
-            let ptrValue = zval.pointee.value.ptr
-            body(key, ptrValue)
-        } else {
-            body(key, nil)
-        }
-    }
+    foreachStrKeyPtr(ht, body)
+}
+
+@inline(__always)
+public func ZVAL_COPY_DEREF_TO_SCALAR(_ zvIn: UnsafeMutablePointer<zval>, _ out: inout zval) {
+    ZVAL_COPY_DEREF(&out, zvIn)
 }
 
 public func zend_hash_init(

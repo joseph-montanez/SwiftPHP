@@ -84,7 +84,7 @@ public struct PhpFunctionContext {
     }
 }
 
-#if ZTS
+#if ZTS_SWIFT
 // ZTS (Thread Safe) version of the function
 @_silgen_name("create_module_entry")
 public func create_module_entry(
