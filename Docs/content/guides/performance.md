@@ -14,16 +14,18 @@ Pairwise Distance calculates the distance between every unique pair of vectors
 
 $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}$$
 
-### Result
+### Result (Debug Mode)
 
-| Version                   | Processor / OS                            | Vector Count | Pairwise Calculations | Execution Time | Estimated Time at 50 k Vectors | Speedup vs PHP |
-| :------------------------- | :---------------------------------------- | :----------- | :-------------------- | :------------- | :----------------------------- | :-------------- |
-| **PHP (Baseline)**         | Apple M4 Mac mini (macOS 15)             | 2 000        | ~2 million            | ~1.47 s        | **~15.3 minutes**              | 1×              |
-| **Swift (Single Core)**    | Apple M4 Mac mini (macOS 15)             | 50 000       | ~1.25 billion         | 29.30 s        | 29.30 s                        | **30.99×**      |
-| **Swift (Multi-Core)**     | Apple M4 Mac mini (macOS 15)             | 50 000       | ~1.25 billion         | 7.00 s         | 7.00 s                         | **133.25×**     |
-| **PHP (Baseline)**         | Snapdragon X1P42100 (Windows 11)         | 2 000        | ~2 million            | 1.2340 s       | **~12.9 minutes**       | 1×              |
-| **Swift (Single Core)**    | Snapdragon X1P42100 (Windows 11)         | 50 000       | ~1.25 billion         | 11.0950 s      | 11.0950 s                      | **~68.35×**     |
-| **Swift (Multi-Core)**     | Snapdragon X1P42100 (Windows 11)         | 50 000       | ~1.25 billion         | 3.0551 s       | 3.0551 s                       | **~252.45×**    |
+Still working on getting release modes working on various systems so below are debug versions
+
+| Version | Processor / OS | Vector Count | Pairwise Calculations | Execution Time | Estimated Time at 50 k Vectors | Speedup vs PHP |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **PHP (Baseline)** | Apple M4 Mac mini (macOS 15) | 2 000 | ~2 million | ~1.47 s | **~15.3 minutes** | 1× |
+| **Swift (Single Core)** | Apple M4 Mac mini (macOS 15) | 50 000 | ~1.25 billion | 8.2841 s | 8.2841 s | **~110.81×** |
+| **Swift (Multi-Core)** | Apple M4 Mac mini (macOS 15) | 50 000 | ~1.25 billion | 2.1486 s | 2.1486 s | **~427.26×** |
+| **PHP (Baseline)** | Snapdragon X1P42100 (Windows 11) | 2 000 | ~2 million | 1.2340 s | **~12.9 minutes** | 1× |
+| **Swift (Single Core)** | Snapdragon X1P42100 (Windows 11) | 50 000 | ~1.25 billion | 11.0950 s | 11.0950 s | **~68.35×** |
+| **Swift (Multi-Core)** | Snapdragon X1P42100 (Windows 11) | 50 000 | ~1.25 billion | 3.0551 s | 3.0551 s | **~252.45×** |
 
 
 ### PHP Benchmark Test

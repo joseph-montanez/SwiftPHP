@@ -13,113 +13,8 @@ Swift offers great performance since its a compiled language with parallel and a
 Benchmark Pairwise Distance#
 Pairwise Distance calculates the distance between every unique pair of vectors
 $$d = \sqrt{(x_2 - x_1)^2 &#43; (y_2 - y_1)^2 &#43; (z_2 - z_1)^2}$$
-Result#
-
-  
-      
-          Version
-          Processor / OS
-          Vector Count
-          Pairwise Calculations
-          Execution Time
-          Estimated Time at 50 k Vectors
-          Speedup vs PHP
-      
-  
-  
-      
-          PHP (Baseline)
-          Apple M4 Mac mini (macOS 15)
-          2 000
-          ~2 million
-          ~1.47 s
-          ~15.3 minutes
-          1×
-      
-      
-          Swift (Single Core)
-          Apple M4 Mac mini (macOS 15)
-          50 000
-          ~1.25 billion
-          29.30 s
-          29.30 s
-          30.99×
-      
-      
-          Swift (Multi-Core)
-          Apple M4 Mac mini (macOS 15)
-          50 000
-          ~1.25 billion
-          7.00 s
-          7.00 s
-          133.25×
-      
-      
-          PHP (Baseline)
-          Snapdragon X1P42100 (Windows 11)
-          2 000
-          ~2 million
-          1.2340 s
-          ~12.9 minutes
-          1×
-      
-      
-          Swift (Single Core)
-          Snapdragon X1P42100 (Windows 11)
-          50 000
-          ~1.25 billion
-          11.0950 s
-          11.0950 s
-          ~68.35×
-      
-      
-          Swift (Multi-Core)
-          Snapdragon X1P42100 (Windows 11)
-          50 000
-          ~1.25 billion
-          3.0551 s
-          3.0551 s
-          ~252.45×
-      
-  
-
-PHP Benchmark Test#
-$numVectors = 50_000;
-
-echo &#34;Generating test data...\n&#34;;
-$vectors = [];
-for ($i = 0; $i &lt; $numVectors; $i&#43;&#43;) {
-    $vectors[] = new \raylib\Vector3(
-        rand(0, 100) / 10.0,
-        rand(0, 100) / 10.0,
-        rand(0, 100) / 10.0
-    );
-}
-echo &#34;Test data generated.\n\n&#34;;
-
-
-
-$smallVectorSet = array_slice($vectors, 0, 2000);
-
-printf(&#34;\n--- Benchmarking Pairwise Distance ---\n&#34;);
-printf(&#34;Running PHP version with %s vectors...\n&#34;, number_format(count($smallVectorSet)));
-$startPhp = microtime(true);
-$phpDistance = php_total_pairwise_distance($smallVectorSet);
-$endPhp = microtime(true);
-$phpTime = $endPhp - $startPhp;
-printf(&#34;PHP Time: %.4f seconds\n&#34;, $phpTime);
-
-
-printf(&#34;\nRunning Swift version with %s vectors...\n&#34;, number_format(count($vectors)));
-$startSwift = microtime(true);
-$swiftDistance = \raylib\total_pairwise_distance($vectors); // Your new namespaced function
-$endSwift = microtime(true);
-$swiftTime = $endSwift - $startSwift;
-printf(&#34;Swift Time: %.4f seconds\n&#34;, $swiftTime);
-
-$speedup = ($phpTime / count($smallVectorSet)**2) / ($swiftTime / count($vectors)**2);
-printf(&#34;\n✅ Swift extension is roughly %.2f times faster on a per-operation basis.\n&#34;, $speedup);Pure PHP Implementation#
-PHP has no built-in threading or parallel features to speed this up.">
+Result (Debug Mode)#
+Still working on getting release modes working on various systems so below are debug versions">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/SwiftPHP/guides/performance/">
@@ -128,7 +23,7 @@ PHP has no built-in threading or parallel features to speed this up.">
   <meta property="og:description" content="Performance# Swift offers great performance since its a compiled language with parallel and async features that are type checked. All while having no garbage collection.
 Benchmark Pairwise Distance# Pairwise Distance calculates the distance between every unique pair of vectors
 $$d = \sqrt{(x_2 - x_1)^2 &#43; (y_2 - y_1)^2 &#43; (z_2 - z_1)^2}$$
-Result# Version Processor / OS Vector Count Pairwise Calculations Execution Time Estimated Time at 50 k Vectors Speedup vs PHP PHP (Baseline) Apple M4 Mac mini (macOS 15) 2 000 ~2 million ~1.47 s ~15.3 minutes 1× Swift (Single Core) Apple M4 Mac mini (macOS 15) 50 000 ~1.25 billion 29.30 s 29.30 s 30.99× Swift (Multi-Core) Apple M4 Mac mini (macOS 15) 50 000 ~1.25 billion 7.00 s 7.00 s 133.25× PHP (Baseline) Snapdragon X1P42100 (Windows 11) 2 000 ~2 million 1.2340 s ~12.9 minutes 1× Swift (Single Core) Snapdragon X1P42100 (Windows 11) 50 000 ~1.25 billion 11.0950 s 11.0950 s ~68.35× Swift (Multi-Core) Snapdragon X1P42100 (Windows 11) 50 000 ~1.25 billion 3.0551 s 3.0551 s ~252.45× PHP Benchmark Test# $numVectors = 50_000; echo &#34;Generating test data...\n&#34;; $vectors = []; for ($i = 0; $i &lt; $numVectors; $i&#43;&#43;) { $vectors[] = new \raylib\Vector3( rand(0, 100) / 10.0, rand(0, 100) / 10.0, rand(0, 100) / 10.0 ); } echo &#34;Test data generated.\n\n&#34;; $smallVectorSet = array_slice($vectors, 0, 2000); printf(&#34;\n--- Benchmarking Pairwise Distance ---\n&#34;); printf(&#34;Running PHP version with %s vectors...\n&#34;, number_format(count($smallVectorSet))); $startPhp = microtime(true); $phpDistance = php_total_pairwise_distance($smallVectorSet); $endPhp = microtime(true); $phpTime = $endPhp - $startPhp; printf(&#34;PHP Time: %.4f seconds\n&#34;, $phpTime); printf(&#34;\nRunning Swift version with %s vectors...\n&#34;, number_format(count($vectors))); $startSwift = microtime(true); $swiftDistance = \raylib\total_pairwise_distance($vectors); // Your new namespaced function $endSwift = microtime(true); $swiftTime = $endSwift - $startSwift; printf(&#34;Swift Time: %.4f seconds\n&#34;, $swiftTime); $speedup = ($phpTime / count($smallVectorSet)**2) / ($swiftTime / count($vectors)**2); printf(&#34;\n✅ Swift extension is roughly %.2f times faster on a per-operation basis.\n&#34;, $speedup);Pure PHP Implementation# PHP has no built-in threading or parallel features to speed this up.">
+Result (Debug Mode)# Still working on getting release modes working on various systems so below are debug versions">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="guides">
@@ -140,7 +35,7 @@ Result# Version Processor / OS Vector Count Pairwise Calculations Execution Time
 
 
   <script defer src="/SwiftPHP/fuse.min.js"></script>
-  <script defer src="/SwiftPHP/en.search.min.9df05755cd177b4d633c4bd537a064a18f2e3903f4137b6b786d61162fd78c7e.js" integrity="sha256-nfBXVc0Xe01jPEvVN6BkoY8uOQP0E3treG1hFi/XjH4=" crossorigin="anonymous"></script>
+  <script defer src="/SwiftPHP/en.search.min.31eecf13e02149bb81e13bbb097c2b8a71717c1e7664887683b06a8a78ce95e5.js" integrity="sha256-Me7PE&#43;AhSbuB4Tu7CXwrinFxfB52ZIh2g7BqinjOleU=" crossorigin="anonymous"></script>
 
      
   
@@ -313,7 +208,7 @@ Result# Version Processor / OS Vector Count Pairwise Calculations Execution Time
   <ul>
     <li><a href="#benchmark-pairwise-distance">Benchmark Pairwise Distance</a>
       <ul>
-        <li><a href="#result">Result</a></li>
+        <li><a href="#result-debug-mode">Result (Debug Mode)</a></li>
         <li><a href="#php-benchmark-test">PHP Benchmark Test</a></li>
         <li><a href="#pure-php-implementation">Pure PHP Implementation</a></li>
         <li><a href="#swiftphp-native-php-extension-implementation">SwiftPHP Native PHP Extension Implementation</a></li>
@@ -336,7 +231,8 @@ Result# Version Processor / OS Vector Count Pairwise Calculations Execution Time
 <h2 id="benchmark-pairwise-distance">Benchmark Pairwise Distance<a class="anchor" href="#benchmark-pairwise-distance">#</a></h2>
 <p>Pairwise Distance calculates the distance between every unique pair of vectors</p>
 <p>$$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}$$</p>
-<h3 id="result">Result<a class="anchor" href="#result">#</a></h3>
+<h3 id="result-debug-mode">Result (Debug Mode)<a class="anchor" href="#result-debug-mode">#</a></h3>
+<p>Still working on getting release modes working on various systems so below are debug versions</p>
 <table>
   <thead>
       <tr>
@@ -364,18 +260,18 @@ Result# Version Processor / OS Vector Count Pairwise Calculations Execution Time
           <td style="text-align: left">Apple M4 Mac mini (macOS 15)</td>
           <td style="text-align: left">50 000</td>
           <td style="text-align: left">~1.25 billion</td>
-          <td style="text-align: left">29.30 s</td>
-          <td style="text-align: left">29.30 s</td>
-          <td style="text-align: left"><strong>30.99×</strong></td>
+          <td style="text-align: left">8.2841 s</td>
+          <td style="text-align: left">8.2841 s</td>
+          <td style="text-align: left"><strong>~110.81×</strong></td>
       </tr>
       <tr>
           <td style="text-align: left"><strong>Swift (Multi-Core)</strong></td>
           <td style="text-align: left">Apple M4 Mac mini (macOS 15)</td>
           <td style="text-align: left">50 000</td>
           <td style="text-align: left">~1.25 billion</td>
-          <td style="text-align: left">7.00 s</td>
-          <td style="text-align: left">7.00 s</td>
-          <td style="text-align: left"><strong>133.25×</strong></td>
+          <td style="text-align: left">2.1486 s</td>
+          <td style="text-align: left">2.1486 s</td>
+          <td style="text-align: left"><strong>~427.26×</strong></td>
       </tr>
       <tr>
           <td style="text-align: left"><strong>PHP (Baseline)</strong></td>
@@ -796,7 +692,7 @@ Result# Version Processor / OS Vector Count Pairwise Calculations Execution Time
   <ul>
     <li><a href="#benchmark-pairwise-distance">Benchmark Pairwise Distance</a>
       <ul>
-        <li><a href="#result">Result</a></li>
+        <li><a href="#result-debug-mode">Result (Debug Mode)</a></li>
         <li><a href="#php-benchmark-test">PHP Benchmark Test</a></li>
         <li><a href="#pure-php-implementation">Pure PHP Implementation</a></li>
         <li><a href="#swiftphp-native-php-extension-implementation">SwiftPHP Native PHP Extension Implementation</a></li>

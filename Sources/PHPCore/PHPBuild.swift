@@ -10,7 +10,7 @@ public let ZEND_BUILD_TS = ",TS"
 public let ZEND_BUILD_TS = ",NTS"
 #endif
 
-#if ZEND_DEBUG
+#if ZEND_DEBUG_SWIFT
 public let ZEND_BUILD_DEBUG = ",debug"
 #else
 public let ZEND_BUILD_DEBUG = ""

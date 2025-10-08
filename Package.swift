@@ -28,7 +28,7 @@ var targets: [Target] = [
             .define("WIN32",      .when(platforms: [.windows])),
             .define("_WIN32",     .when(platforms: [.windows])),
             .define("_WINDOWS",   .when(platforms: [.windows])),
-            .define("ZEND_DEBUG",   .when(platforms: [.windows])),
+            .define("ZEND_DEBUG",   .when(platforms: [.windows, .macOS, .iOS])),
             // .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
             // .define("ZTS", to: "0", .when(platforms: [.windows])), 
             .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
@@ -43,6 +43,7 @@ var targets: [Target] = [
             // ], .when(platforms: [.windows])),
         ],
         swiftSettings: [
+            .define("ZEND_DEBUG_SWIFT",   .when(platforms: [.windows, .macOS, .iOS])),
             .define("ZTS_SWIFT",  .when(platforms: [.macOS, .iOS])),
             .define("NTS_SWIFT",  .when(platforms: [.windows])),
             .unsafeFlags([
@@ -97,7 +98,7 @@ var targets: [Target] = [
             .define("WIN32",      .when(platforms: [.windows])),
             .define("_WIN32",     .when(platforms: [.windows])),
             .define("_WINDOWS",   .when(platforms: [.windows])),
-            .define("ZEND_DEBUG",   .when(platforms: [.windows])),
+            .define("ZEND_DEBUG",   .when(platforms: [.windows, .macOS, .iOS])),
             // .define("ZTS", to: "0", .when(platforms: [.windows])), 
             // .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])), 
             .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
@@ -112,6 +113,7 @@ var targets: [Target] = [
             ], .when(platforms: [.windows])),
         ],
         swiftSettings: [
+            .define("ZEND_DEBUG_SWIFT",   .when(platforms: [.windows, .macOS, .iOS])),
             .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
             .define("NTS_SWIFT", .when(platforms: [.windows])),
             .unsafeFlags([
@@ -145,8 +147,7 @@ var targets: [Target] = [
             .define("_WIN32",     .when(platforms: [.windows])),
             .define("_WINDOWS",   .when(platforms: [.windows])),
             .define("ZTS",        .when(platforms: [.macOS, .iOS])),
-            .define("ZEND_DEBUG", .when(platforms: [.macOS, .iOS])),
-            .define("ZEND_DEBUG",   .when(platforms: [.windows])),
+            .define("ZEND_DEBUG",   .when(platforms: [.windows, .macOS, .iOS])),
             // .define("ZEND_DEBUG", to: "0", .when(platforms: [.windows])),
             // .define("ZTS", to: "0", .when(platforms: [.windows])), 
             .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
@@ -160,12 +161,13 @@ var targets: [Target] = [
             ], .when(platforms: [.windows])),
         ],
         swiftSettings: [
+            .define("ZEND_DEBUG_SWIFT",   .when(platforms: [.windows, .macOS, .iOS])),
             .define("ZTS_SWIFT",  .when(platforms: [.macOS, .iOS])),
             .define("NTS_SWIFT",  .when(platforms: [.windows])),
             .define("ZEND_WIN32", .when(platforms: [.windows])),
             .define("PHP_WIN32",  .when(platforms: [.windows])),
             .define("WIN32",      .when(platforms: [.windows])),
-            .define("ZEND_DEBUG", .when(platforms: [.macOS, .iOS])),
+            .define("ZEND_DEBUG",   .when(platforms: [.windows, .macOS, .iOS])),
             .define("ZTS", .when(platforms: [.macOS, .iOS])),
             .define("ZTS_SWIFT", .when(platforms: [.macOS, .iOS])),
             .define("NTS_SWIFT", .when(platforms: [.windows])),
