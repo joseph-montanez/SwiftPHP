@@ -12,12 +12,16 @@ Why not "X-language"? Well, PHP's C-API is mostly C-Macros which is not possible
  - **Zig** - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API, so I've put a pin into this for now.
  - **Rust** - Someone already did this work in Rust https://github.com/davidcole1340/ext-php-rs
 
+## Limitation
+
+If you want **Windows** support, any **asynchronous** work will __stall__ the `php.exe` program when trying to exit. You can still perform parallel operations such as fork-join and threads but as of right now I don't know of a way to cleaning exit Swift's async system when running inside PHP's runtime. This relates to Swift's **Task** and **await** features.
+
 ## Supported PHP Versions
 
  - PHP 8.2 (Unsupported)
  - PHP 8.3 (Unsupported)
  - PHP 8.4
- - PHP 8.5 (Pending) - Waiting on ARM64 Fixes before testing
+ - PHP 8.5 (Pending) - Waiting on ARM64 experimental builds
 
 ## Supported Operating Systems
 
@@ -197,19 +201,10 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
     
     let version = strdup("2.0.0")
     let module_name = strdup("raylib")
-    var buildIdString = "API\(PHP_API_VERSION)"
+    let version = strdup("2.0.0")
+    let module_name = strdup("raylib")
 
-#if ZTS
-    buildIdString += ",TS" // Thread Safe
-#else
-    buildIdString += ",NTS" // Non-Thread Safe
-#endif
-
-#if PHP_DEBUG
-    buildIdString += ",debug"
-#endif
-
-    let build_id = strdup(buildIdString)
+    let build_id = strdup(ZEND_MODULE_BUILD_ID)
     
     raylib_ini_entries_ptr = UnsafeMutablePointer<zend_ini_entry>.allocate(capacity: 1)
     raylib_ini_entries_ptr?.initialize(to: zend_ini_entry())
@@ -217,7 +212,7 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
     raylib_deps_ptr = UnsafeMutablePointer<zend_module_dep>.allocate(capacity: 1)
     raylib_deps_ptr?.initialize(to: zend_module_dep())
 
-#if ZTS
+#if ZTS_SWIFT
     raylibModule_ptr = create_module_entry(
         module_name,
         version,

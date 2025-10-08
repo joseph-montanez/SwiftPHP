@@ -186,6 +186,7 @@ I have chosen to make the API close to the C API for the first release so anyone
   
 <nav id="TableOfContents">
   <ul>
+    <li><a href="#limitation">Limitation</a></li>
     <li><a href="#supported-php-versions">Supported PHP Versions</a></li>
     <li><a href="#supported-operating-systems">Supported Operating Systems</a></li>
     <li><a href="#unsupported-tooling">Unsupported Tooling</a></li>
@@ -214,12 +215,14 @@ I have chosen to make the API close to the C API for the first release so anyone
 <li><strong>Zig</strong> - I have created a prototype to replicate many of the C-Macros however its too agressive in its C-Interop that its cause so much work and custom PHP C Core patches than its worth. Zig is also volitile in its API, so I&rsquo;ve put a pin into this for now.</li>
 <li><strong>Rust</strong> - Someone already did this work in Rust <a href="https://github.com/davidcole1340/ext-php-rs">https://github.com/davidcole1340/ext-php-rs</a></li>
 </ul>
+<h2 id="limitation">Limitation<a class="anchor" href="#limitation">#</a></h2>
+<p>If you want <strong>Windows</strong> support, any <strong>asynchronous</strong> work will <strong>stall</strong> the <code>php.exe</code> program when trying to exit. You can still perform parallel operations such as fork-join and threads but as of right now I don&rsquo;t know of a way to cleaning exit Swift&rsquo;s async system when running inside PHP&rsquo;s runtime. This relates to Swift&rsquo;s <strong>Task</strong> and <strong>await</strong> features.</p>
 <h2 id="supported-php-versions">Supported PHP Versions<a class="anchor" href="#supported-php-versions">#</a></h2>
 <ul>
 <li>PHP 8.2 (Unsupported)</li>
 <li>PHP 8.3 (Unsupported)</li>
 <li>PHP 8.4</li>
-<li>PHP 8.5 (Pending) - Waiting on ARM64 Fixes before testing</li>
+<li>PHP 8.5 (Pending) - Waiting on ARM64 experimental builds</li>
 </ul>
 <h2 id="supported-operating-systems">Supported Operating Systems<a class="anchor" href="#supported-operating-systems">#</a></h2>
 <ul>
@@ -389,19 +392,10 @@ I have chosen to make the API close to the C API for the first release so anyone
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> version = strdup(<span style="color:#e6db74">&#34;2.0.0&#34;</span>)
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> module_name = strdup(<span style="color:#e6db74">&#34;raylib&#34;</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> buildIdString = <span style="color:#e6db74">&#34;API</span><span style="color:#e6db74">\(</span>PHP_API_VERSION<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> version = strdup(<span style="color:#e6db74">&#34;2.0.0&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> module_name = strdup(<span style="color:#e6db74">&#34;raylib&#34;</span>)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">ZTS</span>
-</span></span><span style="display:flex;"><span>    buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,TS&#34;</span> <span style="color:#75715e">// Thread Safe</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#else</span>
-</span></span><span style="display:flex;"><span>    buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,NTS&#34;</span> <span style="color:#75715e">// Non-Thread Safe</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">PHP_DEBUG</span>
-</span></span><span style="display:flex;"><span>    buildIdString <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;,debug&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> build_id = strdup(buildIdString)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> build_id = strdup(ZEND_MODULE_BUILD_ID)
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    raylib_ini_entries_ptr = UnsafeMutablePointer&lt;zend_ini_entry&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
 </span></span><span style="display:flex;"><span>    raylib_ini_entries_ptr?.initialize(to: zend_ini_entry())
@@ -409,7 +403,7 @@ I have chosen to make the API close to the C API for the first release so anyone
 </span></span><span style="display:flex;"><span>    raylib_deps_ptr = UnsafeMutablePointer&lt;zend_module_dep&gt;.allocate(capacity: <span style="color:#ae81ff">1</span>)
 </span></span><span style="display:flex;"><span>    raylib_deps_ptr?.initialize(to: zend_module_dep())
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">ZTS</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#if</span> <span style="color:#75715e">ZTS_SWIFT</span>
 </span></span><span style="display:flex;"><span>    raylibModule_ptr = create_module_entry(
 </span></span><span style="display:flex;"><span>        module_name,
 </span></span><span style="display:flex;"><span>        version,
@@ -502,6 +496,7 @@ I have chosen to make the API close to the C API for the first release so anyone
   
 <nav id="TableOfContents">
   <ul>
+    <li><a href="#limitation">Limitation</a></li>
     <li><a href="#supported-php-versions">Supported PHP Versions</a></li>
     <li><a href="#supported-operating-systems">Supported Operating Systems</a></li>
     <li><a href="#unsupported-tooling">Unsupported Tooling</a></li>
