@@ -17,13 +17,26 @@ public struct php_raylib_vector3_object {
     public var std: zend_object
 }
 
+extension php_raylib_vector3_object: ZendObjectContainer {
+    public static var stdOffset: Int {
+        MemoryLayout<Self>.offset(of: \.std)!
+    }
+}
+
+extension php_raylib_vector3_object {
+    var description: String {
+        "Vector3(x: \(self.vector3.x), y: \(self.vector3.y), z: \(self.vector3.z))"
+    }
+
+    mutating func resetToZero() {
+        self.vector3.x = 0
+        self.vector3.y = 0
+        self.vector3.z = 0
+    }
+}
+
 @inline(__always) func asObject(_ p: UnsafeMutableRawPointer?) -> UnsafeMutablePointer<php_raylib_vector3_object> { p!.assumingMemoryBound(to: php_raylib_vector3_object.self) }
 @inline(__always) func asZval(_ p: UnsafeMutableRawPointer?) -> UnsafeMutablePointer<zval> { p!.assumingMemoryBound(to: zval.self) }
-@inline(__always) func fetchObject(_ obj: UnsafeMutablePointer<zend_object>?) -> UnsafeMutablePointer<php_raylib_vector3_object> {
-    let offset = MemoryLayout.offset(of: \php_raylib_vector3_object.std)!
-    let base = UnsafeMutableRawPointer(obj!).advanced(by: -offset)
-    return base.assumingMemoryBound(to: php_raylib_vector3_object.self)
-}
 
 public typealias raylib_vector3_read_float_t = @convention(c) (_ obj: UnsafeMutableRawPointer?, _ retval: UnsafeMutableRawPointer?) -> CInt
 public typealias raylib_vector3_write_float_t = @convention(c) (_ obj: UnsafeMutableRawPointer?, _ value: UnsafeMutableRawPointer?) -> CInt
@@ -56,7 +69,7 @@ public func php_raylib_vector3_property_reader(_ obj: UnsafeMutablePointer<php_r
 
 @_cdecl("php_raylib_vector3_get_property_ptr_ptr")
 public func php_raylib_vector3_get_property_ptr_ptr(_ object: UnsafeMutablePointer<zend_object>?, _ name: UnsafeMutablePointer<zend_string>?, _ prop_type: CInt, _ cache_slot: UnsafeMutablePointer<UnsafeMutableRawPointer?>?) -> UnsafeMutablePointer<zval>? {
-    let intern = fetchObject(object)
+    let intern = fetchObject(object, as: php_raylib_vector3_object.self)
     if let table = intern.pointee.prop_handler, zend_hash_find_ptr(table, name) != nil {
         cache_slot?.pointee = nil
         return nil
@@ -66,7 +79,7 @@ public func php_raylib_vector3_get_property_ptr_ptr(_ object: UnsafeMutablePoint
 
 @_cdecl("php_raylib_vector3_read_property")
 public func php_raylib_vector3_read_property(_ object: UnsafeMutablePointer<zend_object>?, _ name: UnsafeMutablePointer<zend_string>?, _ prop_type: CInt, _ cache_slot: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ rv: UnsafeMutablePointer<zval>?) -> UnsafeMutablePointer<zval>? {
-    let intern = fetchObject(object)
+    let intern = fetchObject(object, as: php_raylib_vector3_object.self)
     var hnd: UnsafeMutablePointer<raylib_vector3_prop_handler>? = nil
     if let table = intern.pointee.prop_handler, let raw = zend_hash_find_ptr(table, name) { hnd = raw.assumingMemoryBound(to: raylib_vector3_prop_handler.self) }
     if let h = hnd { return php_raylib_vector3_property_reader(intern, UnsafePointer(h), rv) }
@@ -75,7 +88,7 @@ public func php_raylib_vector3_read_property(_ object: UnsafeMutablePointer<zend
 
 @_cdecl("php_raylib_vector3_write_property")
 public func php_raylib_vector3_write_property(_ object: UnsafeMutablePointer<zend_object>?, _ member: UnsafeMutablePointer<zend_string>?, _ value: UnsafeMutablePointer<zval>?, _ cache_slot: UnsafeMutablePointer<UnsafeMutableRawPointer?>?) -> UnsafeMutablePointer<zval>? {
-    let intern = fetchObject(object)
+    let intern = fetchObject(object, as: php_raylib_vector3_object.self)
     var hnd: UnsafeMutablePointer<raylib_vector3_prop_handler>? = nil
     if let table = intern.pointee.prop_handler, let raw = zend_hash_find_ptr(table, member) { hnd = raw.assumingMemoryBound(to: raylib_vector3_prop_handler.self) }
     if let h = hnd, let writer = h.pointee.write_float_func { _ = writer(UnsafeMutableRawPointer(intern), UnsafeMutableRawPointer(value)); return value }
@@ -84,7 +97,7 @@ public func php_raylib_vector3_write_property(_ object: UnsafeMutablePointer<zen
 
 @_cdecl("php_raylib_vector3_has_property")
 public func php_raylib_vector3_has_property(_ object: UnsafeMutablePointer<zend_object>?, _ name: UnsafeMutablePointer<zend_string>?, _ has_set_exists: CInt, _ cache_slot: UnsafeMutablePointer<UnsafeMutableRawPointer?>?) -> CInt {
-    let intern = fetchObject(object)
+    let intern = fetchObject(object, as: php_raylib_vector3_object.self)
     var hnd: UnsafeMutablePointer<raylib_vector3_prop_handler>? = nil
     if let table = intern.pointee.prop_handler, let raw = zend_hash_find_ptr(table, name) { hnd = raw.assumingMemoryBound(to: raylib_vector3_prop_handler.self) }
     if hnd != nil {
@@ -115,7 +128,8 @@ public func php_raylib_vector3_get_gc(_ object: UnsafeMutablePointer<zend_object
 
 @_cdecl("php_raylib_vector3_get_properties")
 public func php_raylib_vector3_get_properties(_ object: UnsafeMutablePointer<zend_object>?) -> UnsafeMutablePointer<HashTable>? {
-    let intern = fetchObject(object); let props = zend_std_get_properties(object)
+    let intern = fetchObject(object, as: php_raylib_vector3_object.self); 
+    let props = zend_std_get_properties(object)
     var handlerPtr: UnsafeMutablePointer<raylib_vector3_prop_handler>? = nil
     let ctx = Unmanaged.passRetained(PropsIter(obj: intern, props: props!, hnd: handlerPtr)).toOpaque()
     guard let prop_handler: UnsafeMutablePointer<HashTable> = intern.pointee.prop_handler else { return props }
@@ -176,7 +190,12 @@ func php_raylib_vector3_object_creation_impl(_ ce: UnsafeMutablePointer<zend_cla
     guard let ce = ce else { return nil }
     guard let raw = zend_object_alloc(MemoryLayout<php_raylib_vector3_object>.size, ce) else { return nil }
     let intern = raw.assumingMemoryBound(to: php_raylib_vector3_object.self)
-    if let orig = orig { let other = fetchObject(orig); intern.pointee.vector3 = other.pointee.vector3 } else { intern.pointee.vector3 = Vector3(x: 0, y: 0, z: 0) }
+    if let orig = orig { 
+        let other = fetchObject(orig, as: php_raylib_vector3_object.self); 
+        intern.pointee.vector3 = other.pointee.vector3 
+    } else { 
+        intern.pointee.vector3 = Vector3(x: 0, y: 0, z: 0) 
+    }
     zend_object_std_init(&intern.pointee.std, ce)
     object_properties_init(&intern.pointee.std, ce)
     intern.pointee.prop_handler = V3State.shared.propHandlersPtr
@@ -236,14 +255,14 @@ public func zif_arginfo_vector3_sum(_ execute_data: UnsafeMutablePointer<zend_ex
         guard Z_TYPE_P(vectorZval) == IS_OBJECT else { return }
         guard Z_OBJCE_P(vectorZval) == vector3_ce else { return }
         let obj = Z_OBJ_P(vectorZval)
-        let intern = fetchObject(obj)
+        let intern = fetchObject(obj, as: php_raylib_vector3_object.self)
         total.x += intern.pointee.vector3.x
         total.y += intern.pointee.vector3.y
         total.z += intern.pointee.vector3.z
     }
     var resultObj = zval()
     _ = object_init_ex(&resultObj, vector3_ce)
-    let resultIntern: UnsafeMutablePointer<php_raylib_vector3_object> = fetchObject(Z_OBJ_P(&resultObj))
+    let resultIntern: UnsafeMutablePointer<php_raylib_vector3_object> = fetchObject(Z_OBJ_P(&resultObj), as: php_raylib_vector3_object.self)
     resultIntern.pointee.vector3 = total
     RETURN_OBJ(return_value, Z_OBJ_P(&resultObj))
 }
@@ -322,15 +341,12 @@ public func zif_total_pairwise_distance(
     let ht = Z_ARRVAL_P(vectorsArrayZval)
     let expectedCount = Int(zend_hash_num_elements(ht))
     nativeVectors.reserveCapacity(expectedCount)
-    
-    ZEND_HASH_FOREACH_VAL(ht) { zv in
-        var tmp = zval()
-        ZVAL_COPY_DEREF(&tmp, zv)
-        defer { zval_ptr_dtor(&tmp) }
-        if Z_TYPE(tmp) == IS_OBJECT && Z_OBJCE(tmp) == vector3_ce {
-            let intern = fetchObject(Z_OBJ(tmp))
-            nativeVectors.append(intern.pointee.vector3)
-        }
+
+    ht.withEachObject(
+        ofType: vector3_ce,
+        as: php_raylib_vector3_object.self
+    ) { intern in
+        nativeVectors.append(intern.pointee.vector3)
     }
 
     let finalDistance = calculateTotalPairwiseDistanceParallel(nativeVectors)
@@ -340,7 +356,10 @@ public func zif_total_pairwise_distance(
 
 @_cdecl("vector3__construct")
 public func vector3__construct(_ execute_data: UnsafeMutablePointer<zend_execute_data>?, _ _: UnsafeMutablePointer<zval>?) {
-    let intern = fetchObject(UnsafeMutablePointer(mutating: execute_data?.pointee.This.value.obj))
+    let intern = fetchObject(
+        UnsafeMutablePointer(mutating: execute_data?.pointee.This.value.obj), 
+        as: php_raylib_vector3_object.self
+    )
     var x: CDouble = 0, y: CDouble = 0, z: CDouble = 0
     var x_is_null: CBool = true, y_is_null: CBool = true, z_is_null: CBool = true
     do {

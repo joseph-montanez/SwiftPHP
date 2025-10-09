@@ -3,6 +3,8 @@ draft = false
 title = 'Hello Swift'
 +++
 
+# SwiftPHP
+
 SwiftPHP is an effort to make PHP extensions in a safer language than C. Every PHP minor release contains memory leaks and buffer overflow which is easy to create in C, but harder to do the same in Swift. Swift also has great concurrency constructs, allowing you to access more compute in your native extensions.
 
 I have chosen to make the API close to the C API for the first release so anyone coming from the C API or wants to use the C API for documentation can. It also makes migrating existing C based PHP extensions easier.

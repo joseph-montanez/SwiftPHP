@@ -1,10 +1,10 @@
 +++
 draft = false
-title = 'Performance'
+title = 'Performance Comparison'
 math = true
 +++
 
-# Performance
+# Performance Comparison
 
 Swift offers great performance since its a compiled language with parallel and async features that are type checked. All while having no garbage collection.
 
@@ -16,16 +16,16 @@ $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}$$
 
 ### Result (Debug Mode)
 
-Still working on getting release modes working on various systems so below are debug versions
+The following is based on 50,000 vectors and ~1.25 billion calcuations.
 
-| Version | Processor / OS | Vector Count | Pairwise Calculations | Execution Time | Estimated Time at 50 k Vectors | Speedup vs PHP |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **PHP (Baseline)** | Apple M4 Mac mini (macOS 15) | 2 000 | ~2 million | ~1.47 s | **~15.3 minutes** | 1× |
-| **Swift (Single Core)** | Apple M4 Mac mini (macOS 15) | 50 000 | ~1.25 billion | 8.2841 s | 8.2841 s | **~110.81×** |
-| **Swift (Multi-Core)** | Apple M4 Mac mini (macOS 15) | 50 000 | ~1.25 billion | 2.1486 s | 2.1486 s | **~427.26×** |
-| **PHP (Baseline)** | Snapdragon X1P42100 (Windows 11) | 2 000 | ~2 million | 1.2340 s | **~12.9 minutes** | 1× |
-| **Swift (Single Core)** | Snapdragon X1P42100 (Windows 11) | 50 000 | ~1.25 billion | 11.0950 s | 11.0950 s | **~68.35×** |
-| **Swift (Multi-Core)** | Snapdragon X1P42100 (Windows 11) | 50 000 | ~1.25 billion | 3.0551 s | 3.0551 s | **~252.45×** |
+| Version | Processor / OS | Execution Time | Estimated Time at 50 k Vectors | Speedup vs PHP |
+| :--- | :--- | :--- | :--- | :--- |
+| **PHP (Baseline)** | Apple M4 Mac mini (macOS 15) | 953.98 s | **~15.9 minutes** | 1× |
+| **Swift (Single Core)** | Apple M4 Mac mini (macOS 15) | 8.2841 s | 8.2841 s | **~115.16×** |
+| **Swift (Multi-Core)** | Apple M4 Mac mini (macOS 15) | 2.1486 s | 2.1486 s | **~444.00×** |
+| **PHP (Baseline)** | Snapdragon X1P42100 (Windows 11) | 1.2340 s | **~12.9 minutes** | 1× |
+| **Swift (Single Core)** | Snapdragon X1P42100 (Windows 11) | 11.0950 s | 11.0950 s | **~68.35×** |
+| **Swift (Multi-Core)** | Snapdragon X1P42100 (Windows 11) | 3.0551 s | 3.0551 s | **~252.45×** |
 
 
 ### PHP Benchmark Test

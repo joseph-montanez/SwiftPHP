@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/SwiftPHP/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=SwiftPHP/livereload" data-no-instant defer></script>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Working with PHP Arrays in Swift 🚀#
+This guide explains how to use a set of helper methods to safely iterate over PHP arrays in Swift. These methods are provided as an extension on UnsafeMutablePointer&lt;zend_array&gt;, which means you can call them directly on the result of Z_ARRVAL_P(...).
+The goal is to provide a simple, type-safe, and idiomatic Swift interface that handles the complex C-level boilerplate for you.
+
+Prerequisites: The ZendObjectContainer Protocol#
+Before you can iterate over your custom PHP objects, the Swift struct that defines its memory layout must conform to the ZendObjectContainer protocol. This is essential for the helper functions to correctly calculate memory offsets.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/SwiftPHP/guides/arrays/">
+  <meta property="og:site_name" content="PHP Extensions in Swift">
+  <meta property="og:title" content="PHP Arrays In Swift">
+  <meta property="og:description" content="Working with PHP Arrays in Swift 🚀# This guide explains how to use a set of helper methods to safely iterate over PHP arrays in Swift. These methods are provided as an extension on UnsafeMutablePointer&lt;zend_array&gt;, which means you can call them directly on the result of Z_ARRVAL_P(...).
+The goal is to provide a simple, type-safe, and idiomatic Swift interface that handles the complex C-level boilerplate for you.
+Prerequisites: The ZendObjectContainer Protocol# Before you can iterate over your custom PHP objects, the Swift struct that defines its memory layout must conform to the ZendObjectContainer protocol. This is essential for the helper functions to correctly calculate memory offsets.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="guides">
+<title>PHP Arrays In Swift | PHP Extensions in Swift</title>
+<link rel="icon" href="/SwiftPHP/favicon.png" >
+<link rel="manifest" href="/SwiftPHP/manifest.json">
+<link rel="canonical" href="http://localhost:1313/SwiftPHP/guides/arrays/">
+<link rel="stylesheet" href="/SwiftPHP/book.min.d124d6c76b11546b04023ef152f0ca77dd5bfd00e1638c75250d60e274cdc189.css" integrity="sha256-0STWx2sRVGsEAj7xUvDKd91b/QDhY4x1JQ1g4nTNwYk=" crossorigin="anonymous">
+
+
+  <script defer src="/SwiftPHP/fuse.min.js"></script>
+  <script defer src="/SwiftPHP/en.search.min.31eecf13e02149bb81e13bbb097c2b8a71717c1e7664887683b06a8a78ce95e5.js" integrity="sha256-Me7PE&#43;AhSbuB4Tu7CXwrinFxfB52ZIh2g7BqinjOleU=" crossorigin="anonymous"></script>
+
+     
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+        ]
+    });">
+</script>
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-guides">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/SwiftPHP/"><img src="/SwiftPHP/swiftphp-logo.svg" alt="Logo" /><span>PHP Extensions in Swift</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/" class="">
+      Guides</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/installation/" class="">
+      Installtion Guide</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/performance/" class="">
+      Performance Comparison</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/arrays/" class="active">
+      PHP Arrays In Swift</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/SwiftPHP/guides/extension-basics/" class="">
+      PHP Extension Basics</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/SwiftPHP/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>PHP Arrays In Swift</h3>
+
+  <label for="toc-control">
+    
+    <img src="/SwiftPHP/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#prerequisites-the-zendobjectcontainer-protocol">Prerequisites: The <code>ZendObjectContainer</code> Protocol</a></li>
+    <li><a href="#iterating-over-values-only">Iterating Over Values Only</a>
+      <ul>
+        <li><a href="#witheachobject"><code>withEachObject</code></a></li>
+        <li><a href="#witheachstring-witheachint-witheachdouble"><code>withEachString</code>, <code>withEachInt</code>, <code>withEachDouble</code></a></li>
+        <li><a href="#foreach-value-only"><code>forEach</code> (Value-Only)</a></li>
+      </ul>
+    </li>
+    <li><a href="#iterating-over-keys-and-values">Iterating Over Keys and Values</a>
+      <ul>
+        <li><a href="#helper-type-phparraykey">Helper Type: <code>PHPArrayKey</code></a></li>
+        <li><a href="#foreach-key-value"><code>forEach</code> (Key-Value)</a></li>
+        <li><a href="#specialized-key-value-iterators">Specialized Key-Value Iterators</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h1 id="working-with-php-arrays-in-swift-">Working with PHP Arrays in Swift 🚀<a class="anchor" href="#working-with-php-arrays-in-swift-">#</a></h1>
+<p>This guide explains how to use a set of helper methods to safely iterate over PHP arrays in Swift. These methods are provided as an <code>extension</code> on <code>UnsafeMutablePointer&lt;zend_array&gt;</code>, which means you can call them directly on the result of <code>Z_ARRVAL_P(...)</code>.</p>
+<p>The goal is to provide a simple, type-safe, and idiomatic Swift interface that handles the complex C-level boilerplate for you.</p>
+<hr>
+<h2 id="prerequisites-the-zendobjectcontainer-protocol">Prerequisites: The <code>ZendObjectContainer</code> Protocol<a class="anchor" href="#prerequisites-the-zendobjectcontainer-protocol">#</a></h2>
+<p>Before you can iterate over your custom PHP objects, the Swift struct that defines its memory layout <strong>must</strong> conform to the <code>ZendObjectContainer</code> protocol. This is essential for the helper functions to correctly calculate memory offsets.</p>
+<p><strong>1. The Protocol Definition</strong>
+This protocol should be available in your project.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">protocol</span> <span style="color:#a6e22e">ZendObjectContainer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> std: zend_object { <span style="color:#66d9ef">get</span> <span style="color:#66d9ef">set</span> }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">var</span> stdOffset: Int { <span style="color:#66d9ef">get</span> }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><p><strong>2. Example Conformance</strong>
+For your custom object struct, ensure <code>std</code> is a stored property and add the conformance in an extension.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#75715e">// The struct that matches your PHP object&#39;s memory layout</span>
+</span></span><span style="display:flex;"><span>@frozen <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">MyPHPObject</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> myCustomData: String
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">var</span> std: zend_object <span style="color:#75715e">// Must be a stored property</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Add conformance in an extension</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">MyPHPObject</span>: ZendObjectContainer {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">var</span> stdOffset: Int {
+</span></span><span style="display:flex;"><span>        MemoryLayout&lt;<span style="color:#66d9ef">Self</span>&gt;.offset(of: <span style="color:#960050;background-color:#1e0010">\</span>.std)<span style="color:#f92672">!</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><hr>
+<h2 id="iterating-over-values-only">Iterating Over Values Only<a class="anchor" href="#iterating-over-values-only">#</a></h2>
+<p>These methods are for when you only care about the values in an array and not their keys.</p>
+<h3 id="witheachobject"><code>withEachObject</code><a class="anchor" href="#witheachobject">#</a></h3>
+<p>Iterates over the array and yields only the elements that are objects of a specific class.</p>
+<p><strong>Signature:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachObject</span>&lt;T: ZendObjectContainer&gt;(
+</span></span><span style="display:flex;"><span>    ofType ce: UnsafeMutablePointer&lt;zend_class_entry&gt;?,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">as</span> objectType: T.<span style="color:#66d9ef">Type</span>,
+</span></span><span style="display:flex;"><span>    body: (UnsafeMutablePointer&lt;T&gt;) -&gt; Void
+</span></span><span style="display:flex;"><span>)</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> nativeObjects: [MyPHPObject] = []
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> ht = Z_ARRVAL_P(phpArrayZval)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> myClassEntry = MyState.shared.ce <span style="color:#75715e">// Get your class entry</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ht.withEachObject(ofType: myClassEntry, <span style="color:#66d9ef">as</span>: MyPHPObject.<span style="color:#66d9ef">self</span>) { intern <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// &#39;intern&#39; is a correctly typed pointer to your Swift struct</span>
+</span></span><span style="display:flex;"><span>    nativeObjects.append(intern.pointee)
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><hr>
+<h3 id="witheachstring-witheachint-witheachdouble"><code>withEachString</code>, <code>withEachInt</code>, <code>withEachDouble</code><a class="anchor" href="#witheachstring-witheachint-witheachdouble">#</a></h3>
+<p>Iterates over the array, yielding only the values that match a specific scalar type.</p>
+<p><strong>Signatures:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachString</span>(body: (String) -&gt; Void)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachInt</span>(body: (Int) -&gt; Void)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachDouble</span>(body: (Double) -&gt; Void)</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> names: [String] = []
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> ht = Z_ARRVAL_P(phpArrayZval)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ht.withEachString { name <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>    names.append(name)
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><hr>
+<h3 id="foreach-value-only"><code>forEach</code> (Value-Only)<a class="anchor" href="#foreach-value-only">#</a></h3>
+<p>The &ldquo;power-user&rdquo; iterator. It yields a pointer to every <code>zval</code> in the array, leaving type checking up to you.</p>
+<p><strong>Signature:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">forEach</span>(body: (UnsafeMutablePointer&lt;zval&gt;) -&gt; Void)</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> ht = Z_ARRVAL_P(phpArrayZval)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ht.forEach { valuePtr <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> Z_TYPE_P(valuePtr) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> IS_STRING:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Found a string&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> IS_LONG:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Found an integer: </span><span style="color:#e6db74">\(</span>Z_LVAL_P<span style="color:#e6db74">(</span>valuePtr<span style="color:#e6db74">))</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Found another type&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><hr>
+<h2 id="iterating-over-keys-and-values">Iterating Over Keys and Values<a class="anchor" href="#iterating-over-keys-and-values">#</a></h2>
+<p>These methods are for when you need both the key and the value, such as when processing an associative array.</p>
+<h3 id="helper-type-phparraykey">Helper Type: <code>PHPArrayKey</code><a class="anchor" href="#helper-type-phparraykey">#</a></h3>
+<p>When iterating with keys, the key is provided as a <code>PHPArrayKey</code> enum. This allows you to safely handle both string and integer keys.</p>
+<p><strong>Definition:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">PHPArrayKey</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> int(UInt)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> string(UnsafeMutablePointer&lt;zend_string&gt;)
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><hr>
+<h3 id="foreach-key-value"><code>forEach</code> (Key-Value)<a class="anchor" href="#foreach-key-value">#</a></h3>
+<p>This is the base key-value iterator. It yields the <code>PHPArrayKey</code> and the raw <code>zval</code> pointer for every element.</p>
+<p><strong>Signature:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">forEach</span>(body: (PHPArrayKey, UnsafeMutablePointer&lt;zval&gt;) -&gt; Void)</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> ht = Z_ARRVAL_P(phpArrayZval)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ht.forEach { key, valuePtr <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> .string(<span style="color:#66d9ef">let</span> keyStr) = key, String(zendString: keyStr) == <span style="color:#e6db74">&#34;my_key&#34;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Found the key &#34;my_key&#34;, now inspect its value</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> Z_TYPE_P(valuePtr) == IS_LONG {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// ...</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><hr>
+<h3 id="specialized-key-value-iterators">Specialized Key-Value Iterators<a class="anchor" href="#specialized-key-value-iterators">#</a></h3>
+<p>These are powerful overloads that provide both the key and a <strong>type-safe value</strong>, filtering the array for you.</p>
+<p><strong>Signatures:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachString</span>(body: (PHPArrayKey, String) -&gt; Void)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachInt</span>(body: (PHPArrayKey, Int) -&gt; Void)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachDouble</span>(body: (PHPArrayKey, Double) -&gt; Void)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">withEachObject</span>&lt;T: ZendObjectContainer&gt;(
+</span></span><span style="display:flex;"><span>    ofType ce: UnsafeMutablePointer&lt;zend_class_entry&gt;?,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">as</span> objectType: T.<span style="color:#66d9ef">Type</span>,
+</span></span><span style="display:flex;"><span>    body: (PHPArrayKey, UnsafeMutablePointer&lt;T&gt;) -&gt; Void
+</span></span><span style="display:flex;"><span>)</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-swift" data-lang="swift"><span style="display:flex;"><span><span style="color:#75715e">// Given a PHP array: $config = [&#34;host&#34; =&gt; &#34;localhost&#34;, &#34;port&#34; =&gt; 8080];</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> ht = Z_ARRVAL_P(configZval)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> config = [String: Any]()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Use the specialized iterator for strings</span>
+</span></span><span style="display:flex;"><span>ht.withEachString { key, value <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> .string(<span style="color:#66d9ef">let</span> keyStr) = key {
+</span></span><span style="display:flex;"><span>        config[String(zendString: keyStr)<span style="color:#f92672">!</span>] = value
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Use the specialized iterator for integers</span>
+</span></span><span style="display:flex;"><span>ht.withEachInt { key, value <span style="color:#66d9ef">in</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> .string(<span style="color:#66d9ef">let</span> keyStr) = key {
+</span></span><span style="display:flex;"><span>        config[String(zendString: keyStr)<span style="color:#f92672">!</span>] = value
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// config now holds [&#34;host&#34;: &#34;localhost&#34;, &#34;port&#34;: 8080]</span></span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+  
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/SwiftPHP/guides/performance/" class="flex align-center">
+        <img src="/SwiftPHP/icons/backward.svg" class="book-icon" alt="Previous" title="Performance Comparison" />
+        <span>Performance Comparison</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/SwiftPHP/guides/extension-basics/" class="flex align-center">
+        <span>PHP Extension Basics</span>
+        <img src="/SwiftPHP/icons/forward.svg" class="book-icon" alt="Next" title="PHP Extension Basics" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+        
+        
+
+ 
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#prerequisites-the-zendobjectcontainer-protocol">Prerequisites: The <code>ZendObjectContainer</code> Protocol</a></li>
+    <li><a href="#iterating-over-values-only">Iterating Over Values Only</a>
+      <ul>
+        <li><a href="#witheachobject"><code>withEachObject</code></a></li>
+        <li><a href="#witheachstring-witheachint-witheachdouble"><code>withEachString</code>, <code>withEachInt</code>, <code>withEachDouble</code></a></li>
+        <li><a href="#foreach-value-only"><code>forEach</code> (Value-Only)</a></li>
+      </ul>
+    </li>
+    <li><a href="#iterating-over-keys-and-values">Iterating Over Keys and Values</a>
+      <ul>
+        <li><a href="#helper-type-phparraykey">Helper Type: <code>PHPArrayKey</code></a></li>
+        <li><a href="#foreach-key-value"><code>forEach</code> (Key-Value)</a></li>
+        <li><a href="#specialized-key-value-iterators">Specialized Key-Value Iterators</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

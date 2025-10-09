@@ -171,20 +171,208 @@ public struct FunctionListBuilder {
     }
 }
 
+/// Represents a key in a PHP array, which can be either an integer or a string.
+public enum PHPArrayKey {
+    case int(UInt) // zend_ulong is aliased to UInt
+    case string(UnsafeMutablePointer<zend_string>)
+}
 
-// @_silgen_name("std_object_handlers")
-// var std_object_handlers: zend_object_handlers
+/// A protocol for any Swift struct that represents the memory layout of a custom PHP object.
+public protocol ZendObjectContainer {
+    /// The standard zend_object required by the Zend Engine.
+    var std: zend_object { get set }
+    
+    /// The memory offset of the `std` property within the struct.
+    static var stdOffset: Int { get }
+}
 
-// zend_get_std_object_handlers() \
-// 	(&std_object_handlers)
+/// A helper to create a Swift String from a zend_string pointer.
+extension String {
+    public init?(zendString: UnsafeMutablePointer<zend_string>?) {
+        guard let zstr = zendString else { return nil }
+        let rawPtr = UnsafeRawPointer(ZSTR_VAL(zstr))
+        let buffer = UnsafeRawBufferPointer(start: rawPtr, count: Int(ZSTR_LEN(zstr)))
+        self.init(decoding: buffer, as: UTF8.self)
+    }
+}
 
-// public func zend_get_std_object_handlers() -> UnsafePointer<zend_object_handlers> {
-//     return UnsafePointer(&std_object_handlers)
-// }
+/// Fetches the beginning of the custom Swift object struct from a pointer
+/// to its standard `zend_object` member.
+@inline(__always)
+public func fetchObject<T: ZendObjectContainer>(
+    _ obj: UnsafeMutablePointer<zend_object>?,
+    as type: T.Type
+) -> UnsafeMutablePointer<T> {
+    // Use the pre-calculated offset from the protocol to avoid generic key path issues.
+    let offset = T.stdOffset
+    
+    let base = UnsafeMutableRawPointer(obj!).advanced(by: -offset)
+    return base.assumingMemoryBound(to: T.self)
+}
 
-@_silgen_name("swift_zend_get_std_object_handlers")
-func swift_zend_get_std_object_handlers() -> UnsafePointer<zend_object_handlers>!
+public extension UnsafeMutablePointer where Pointee == zend_array {
 
-public func zend_std_handlers_ptr_shim() -> UnsafePointer<zend_object_handlers> {
-    swift_zend_get_std_object_handlers()
+    // MARK: - Value-Only Iterators
+
+    /**
+     * Iterates over each element in the array, yielding only the values that are a specific object type.
+     */
+    func withEachObject<T: ZendObjectContainer>(
+        ofType ce: UnsafeMutablePointer<zend_class_entry>?,
+        as objectType: T.Type,
+        body: (UnsafeMutablePointer<T>) -> Void
+    ) {
+        guard let ce = ce else { return }
+        
+        self.forEach { valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_OBJECT && Z_OBJCE_P(valuePtr) == ce {
+                let intern = fetchObject(Z_OBJ_P(valuePtr), as: objectType)
+                body(intern)
+            }
+        }
+    }
+
+    /**
+     * Iterates over each element in the array, yielding only the values that are strings.
+     */
+    func withEachString(body: (String) -> Void) {
+        self.forEach { valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_STRING {
+                if let swiftString = String(zendString: Z_STR_P(valuePtr)) {
+                    body(swiftString)
+                }
+            }
+        }
+    }
+
+    /**
+     * Iterates over each element in the array, yielding only the values that are integers.
+     */
+    func withEachInt(body: (Int) -> Void) {
+        self.forEach { valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_LONG {
+                body(Int(Z_LVAL_P(valuePtr)))
+            }
+        }
+    }
+    
+    /**
+     * Iterates over each element in the array, yielding only the values that are doubles (floats).
+     */
+    func withEachDouble(body: (Double) -> Void) {
+        self.forEach { valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_DOUBLE {
+                body(Double(Z_DVAL_P(valuePtr)))
+            }
+        }
+    }
+
+    // MARK: - Generic Iterators
+
+    /**
+     * Iterates over every element in the array, yielding a pointer to the dereferenced value `zval`.
+     * This is a flexible but less safe iterator that requires manual type checking.
+     */
+    func forEach(body: (UnsafeMutablePointer<zval>) -> Void) {
+        ZEND_HASH_FOREACH_VAL(self) { zv in
+            var tmp = zval()
+            ZVAL_COPY_DEREF(&tmp, zv)
+            defer { zval_ptr_dtor(&tmp) }
+            body(&tmp)
+        }
+    }
+    
+    /**
+     * Iterates over each element in the array, yielding both the key and the value `zval`.
+     * This is the base iterator for all key-value operations.
+     */
+    func forEach(body: (PHPArrayKey, UnsafeMutablePointer<zval>) -> Void) {
+        var pos = HashPosition()
+        zend_hash_internal_pointer_reset_ex(self, &pos)
+
+        while true {
+            do {
+                guard let valPtr = zend_hash_get_current_data_ex(self, &pos) else { break }
+
+                var tmpVal = zval()
+                ZVAL_COPY_DEREF(&tmpVal, valPtr)
+                defer { zval_ptr_dtor(&tmpVal) }
+
+                if Z_TYPE(tmpVal) == IS_UNDEF {
+                    if zend_hash_move_forward_ex(self, &pos) == FAILURE { return }
+                    continue
+                }
+
+                var keyStr: UnsafeMutablePointer<zend_string>? = nil
+                var index: zend_ulong = 0
+                let keyType = zend_hash_get_current_key_ex(self, &keyStr, &index, &pos)
+
+                let key: PHPArrayKey
+                if keyType == HASH_KEY_IS_STRING, let nonNilKeyStr = keyStr {
+                    key = .string(nonNilKeyStr)
+                } else {
+                    key = .int(UInt(index))
+                }
+                
+                body(key, &tmpVal)
+
+            }
+
+            if zend_hash_move_forward_ex(self, &pos) == FAILURE { break }
+        }
+    }
+
+    // MARK: - Specialized Key-Value Iterators
+
+    /**
+     * Iterates over the array, yielding the key and any value that is a String.
+     */
+    func withEachString(body: (PHPArrayKey, String) -> Void) {
+        self.forEach { key, valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_STRING {
+                if let swiftString = String(zendString: Z_STR_P(valuePtr)) {
+                    body(key, swiftString)
+                }
+            }
+        }
+    }
+
+    /**
+     * Iterates over the array, yielding the key and any value that is an Int.
+     */
+    func withEachInt(body: (PHPArrayKey, Int) -> Void) {
+        self.forEach { key, valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_LONG {
+                body(key, Int(Z_LVAL_P(valuePtr)))
+            }
+        }
+    }
+
+    /**
+     * Iterates over the array, yielding the key and any value that is a Double.
+     */
+    func withEachDouble(body: (PHPArrayKey, Double) -> Void) {
+        self.forEach { key, valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_DOUBLE {
+                body(key, Double(Z_DVAL_P(valuePtr)))
+            }
+        }
+    }
+
+    /**
+     * Iterates over the array, yielding the key and any value that is a specific object type.
+     */
+    func withEachObject<T: ZendObjectContainer>(
+        ofType ce: UnsafeMutablePointer<zend_class_entry>?,
+        as objectType: T.Type,
+        body: (PHPArrayKey, UnsafeMutablePointer<T>) -> Void
+    ) {
+        guard let ce = ce else { return }
+        self.forEach { key, valuePtr in
+            if Z_TYPE_P(valuePtr) == IS_OBJECT && Z_OBJCE_P(valuePtr) == ce {
+                let intern = fetchObject(Z_OBJ_P(valuePtr), as: objectType)
+                body(key, intern)
+            }
+        }
+    }
 }
