@@ -7,10 +7,12 @@ import Foundation
 let includePHPXCFramework = false
 let phpSrc = ProcessInfo.processInfo.environment["PHP_SRC_ROOT"] ?? "D:/dev/php-src"
 let phpLib = ProcessInfo.processInfo.environment["PHP_LIB_ROOT"] ?? "D:/dev/php-src/libs"
+let excludeFiles = ["SpriteKit.swift"]
 #else
 let includePHPXCFramework = true
 let phpSrc = "build/php-src"
 let phpLib = ""
+let excludeFiles: [String] = []
 #endif
 
 var targets: [Target] = [
@@ -140,6 +142,7 @@ var targets: [Target] = [
             // .target(name: "CPHP", condition: .when(platforms: [.linux, .windows])),
         ],
         path: "Sources/SwiftPHPExtension",
+        exclude: excludeFiles,
         cSettings: [
             .define("ZEND_WIN32", .when(platforms: [.windows])),
             .define("PHP_WIN32",  .when(platforms: [.windows])),
