@@ -3,7 +3,7 @@
 set -eu
 
 # Variables
-PHP_VERSION="php-8.3.12"
+PHP_VERSION="php-8.4.12"
 BUILD_DIR="build/php-src"
 
 # Create the build directory

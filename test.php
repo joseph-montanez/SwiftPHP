@@ -27,7 +27,7 @@ var_dump(confirm_raylib_compiled(), raylib_hello("John"));
 // Swift register PHP Class
 $p = new \raylib\Vector3(); 
 $p->x = $p->x + 1;
-$p->z+= 1; // This crashes
+$p->z+= 1;
 $p->y++;
 var_dump($p);
 

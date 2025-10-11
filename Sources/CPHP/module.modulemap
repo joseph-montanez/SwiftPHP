@@ -1,5 +1,0 @@
-module CPHP [system] [extern_c] {
-    umbrella header "shims.h"
-    link "php"
-    export *
-}

@@ -100,6 +100,7 @@ func get_module() -> UnsafeMutablePointer<zend_module_entry> {
     var builder = FunctionListBuilder()
     functions_add_entries(builder: &builder)
     vector3_functions_add_entries(builder: &builder)
+    // spritekit_add_entries(builder: &builder)
     raylib_functions_ptr = builder.build()
     
     let version = strdup("2.0.0")

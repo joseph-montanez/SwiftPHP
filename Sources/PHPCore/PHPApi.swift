@@ -386,6 +386,46 @@ public func Z_PARAM_OPTIONAL(state: inout ParseState) {
     state.optional = true
 }
 
+@preconcurrency @_exported import CSwiftPHP
+
+public func Z_PARAM_STR_OR_LONG_EX(
+    state: inout ParseState,
+    destStr: UnsafeMutablePointer<UnsafeMutablePointer<zend_string>?>?,
+    destLong: UnsafeMutablePointer<zend_long>?,
+    isNull: UnsafeMutablePointer<Bool>? = nil,
+    allowNull: Bool
+) -> Bool {
+    Z_PARAM_PROLOGUE(state: &state, deref: false, separate: false)
+    if state.arg == nil { return true }
+    if !zend_parse_arg_str_or_long(state.arg, destStr, destLong, isNull, allowNull, state.i) {
+        state.expectedType = allowNull ? Z_EXPECTED_STRING_OR_LONG_OR_NULL : Z_EXPECTED_STRING_OR_LONG
+        state.errorCode = ZPP_ERROR_WRONG_ARG
+        return false
+    }
+    return true
+}
+
+public func Z_PARAM_STR_OR_LONG(
+    state: inout ParseState,
+    destStr: UnsafeMutablePointer<UnsafeMutablePointer<zend_string>?>?,
+    destLong: UnsafeMutablePointer<zend_long>?
+) throws {
+    if !Z_PARAM_STR_OR_LONG_EX(state: &state, destStr: destStr, destLong: destLong, isNull: nil, allowNull: false) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+public func Z_PARAM_STR_OR_LONG_OR_NULL(
+    state: inout ParseState,
+    destStr: UnsafeMutablePointer<UnsafeMutablePointer<zend_string>?>?,
+    destLong: UnsafeMutablePointer<zend_long>?,
+    isNull: UnsafeMutablePointer<Bool>?
+) throws {
+    if !Z_PARAM_STR_OR_LONG_EX(state: &state, destStr: destStr, destLong: destLong, isNull: isNull, allowNull: true) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
 public func Z_PARAM_STRING_EX(
     state: inout ParseState,
     dest: UnsafeMutablePointer<UnsafeMutablePointer<CChar>?>,
@@ -457,6 +497,42 @@ public func Z_PARAM_DOUBLE_OR_NULL(
     isNull: UnsafeMutablePointer<Bool>?
 ) throws {
     if !Z_PARAM_DOUBLE_EX(state: &state, dest: dest, isNull: isNull, checkNull: true, deref: false) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+public func Z_PARAM_LONG_EX(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<zend_long>?,
+    isNull: UnsafeMutablePointer<Bool>? = nil,
+    checkNull: Bool,
+    deref: Bool
+) -> Bool {
+    Z_PARAM_PROLOGUE(state: &state, deref: deref, separate: false)
+    if state.arg == nil { return true }
+    if !zend_parse_arg_long(state.arg, dest, isNull, checkNull, state.i) {
+        state.expectedType = checkNull ? Z_EXPECTED_LONG_OR_NULL : Z_EXPECTED_LONG
+        state.errorCode = ZPP_ERROR_WRONG_ARG
+        return false
+    }
+    return true
+}
+
+public func Z_PARAM_LONG(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<zend_long>?
+) throws {
+    if !Z_PARAM_LONG_EX(state: &state, dest: dest, isNull: nil, checkNull: false, deref: false) {
+        throw ParameterParseError.wrongArg
+    }
+}
+
+public func Z_PARAM_LONG_OR_NULL(
+    state: inout ParseState,
+    dest: UnsafeMutablePointer<zend_long>?,
+    isNull: UnsafeMutablePointer<Bool>?
+) throws {
+    if !Z_PARAM_LONG_EX(state: &state, dest: dest, isNull: isNull, checkNull: true, deref: false) {
         throw ParameterParseError.wrongArg
     }
 }

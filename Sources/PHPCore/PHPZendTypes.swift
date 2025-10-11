@@ -438,3 +438,15 @@ public func ZEND_TYPE_INIT_CLASS_CONST_MASK(_ class_name: String, _ type_mask: U
 public func RETVAL_STR(_ s: UnsafeMutablePointer<zend_string>, _ return_value: UnsafeMutablePointer<zval>) {
     ZVAL_STR(return_value, s)
 }
+
+
+public func Z_LVAL(_ z: zval) -> zend_long { z.value.lval }
+public func Z_LVAL_P(_ zp: UnsafePointer<zval>) -> zend_long { Z_LVAL(zp.pointee) }
+public func Z_DVAL_P(_ zp: UnsafePointer<zval>) -> CDouble { Z_DVAL(zp.pointee) }
+public func Z_STR(_ z: zval) -> UnsafeMutablePointer<zend_string>? { z.value.str }
+public func Z_STR_P(_ zp: UnsafePointer<zval>) -> UnsafeMutablePointer<zend_string>? { Z_STR(zp.pointee) }
+public func Z_STRVAL(_ z: zval) -> UnsafePointer<CChar>! { ZSTR_VAL(Z_STR(z)) }
+public func Z_STRVAL_P(_ zp: UnsafePointer<zval>) -> UnsafePointer<CChar>! { Z_STRVAL(zp.pointee) }
+public func Z_STRLEN_P(_ zp: UnsafePointer<zval>) -> size_t { Z_STRLEN(zp.pointee) }
+public func Z_STRHASH(_ z: zval) -> zend_ulong { zend_ulong(ZSTR_HASH(Z_STR(z))) }
+public func Z_STRHASH_P(_ zp: UnsafePointer<zval>) -> zend_ulong { Z_STRHASH(zp.pointee) }
